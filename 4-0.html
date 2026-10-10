@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0A3D2A">
+<title>Ghana Life</title>
+<style>
+:root{
+  --ink:#16202a; --muted:#6b7683; --green:#4caf75; --green2:#3c9a63; --bg:#eef2f7;
+  --gold:#FCD116; --red:#CE1126;
+  --font:"Plus Jakarta Sans",Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --shadow:0 6px 24px rgba(20,30,50,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--ink);-webkit-text-size-adjust:100%;line-height:1.4}
+#app{position:fixed;inset:0}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+[hidden]{display:none !important}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;color:inherit;background:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+
+.stack{position:absolute;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;flex-direction:column;gap:8px;z-index:5;pointer-events:none}
+.stack>*{pointer-events:auto}
+.livebar{align-self:center;background:rgba(22,32,42,.85);color:#fff;font-size:13px;font-weight:700;padding:6px 14px;border-radius:99px;box-shadow:0 3px 12px rgba(20,30,50,.25)}
+.topbar{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.96);border-radius:30px;padding:8px 10px 8px 12px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:8px;font-size:21px;letter-spacing:-.02em;font-weight:800}
+.badge-logo{width:34px;height:34px;border-radius:50%;background:#111;color:var(--gold);display:grid;place-items:center;font-size:18px;flex:none}
+.grow{flex:1}
+.pillbtn{padding:11px 18px;border-radius:99px;background:#eef1f5;font-weight:700}
+.pillbtn.green{background:var(--green);color:#fff}
+.cashpill{padding:9px 14px;border-radius:99px;background:#eaf7ef;color:#1f6b41;font-weight:800;transition:background .2s}
+.cashpill.up{background:#c9f0d8}.cashpill.down{background:#fbd9d6}
+.iconbtn{width:40px;height:40px;border-radius:50%;background:#eef1f5;font-size:19px;position:relative;display:grid;place-items:center}
+.iconbtn .badge{position:absolute;top:-4px;right:-4px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip2{padding:8px 13px;border-radius:99px;background:rgba(255,255,255,.94);font-size:14px;font-weight:700;box-shadow:0 3px 12px rgba(20,30,50,.12);white-space:nowrap;flex:none}
+button.chip2:active{background:#eaf7ef}
+.banner{width:100%;background:#3d8b57;color:#fff;font-weight:800;font-size:16px;padding:12px 16px;border-radius:99px;box-shadow:var(--shadow);text-align:center}
+.statpill{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.94);border-radius:99px;padding:8px 14px;box-shadow:0 3px 12px rgba(20,30,50,.12);font-size:13px;font-weight:700}
+.mini-m{display:flex;align-items:center;gap:5px;flex:1}
+.mini-m .bar{flex:1}
+.bar{height:7px;background:#dfe5ec;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .3s}
+.role{white-space:nowrap;color:var(--muted);font-weight:600}
+#mini{position:absolute;right:12px;top:calc(env(safe-area-inset-top,0px) + 232px);width:110px;height:67px;border-radius:12px;box-shadow:var(--shadow);z-index:4;pointer-events:none}
+.toast{position:absolute;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 168px);background:rgba(22,32,42,.88);color:#fff;border-radius:16px;padding:10px 14px;font-size:14px;font-weight:600;z-index:4;box-shadow:var(--shadow)}
+.ctl{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);display:flex;justify-content:space-between;align-items:flex-end;padding:0 14px;z-index:5;pointer-events:none;user-select:none;-webkit-user-select:none}
+.ctl>*{pointer-events:auto}
+.dpad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(2,58px);gap:6px;grid-template-areas:". up ." "left down right"}
+.d{background:rgba(255,255,255,.88);border-radius:16px;font-size:20px;touch-action:none;color:var(--ink);box-shadow:0 3px 12px rgba(20,30,50,.18)}
+.d:active,.d.held{background:var(--green);color:#fff}
+.d.up{grid-area:up}.d.left{grid-area:left}.d.down{grid-area:down}.d.right{grid-area:right}
+.rightcol{display:flex;flex-direction:column;gap:8px;align-items:flex-end;max-width:58%}
+.actbtn{min-width:150px;background:var(--green);color:#fff;font-weight:800;font-size:17px;border-radius:20px;padding:16px 20px;box-shadow:var(--shadow)}
+.actbtn.idle{background:rgba(255,255,255,.88);color:var(--muted);font-weight:700;font-size:14px}
+.taxibtn{background:rgba(255,255,255,.92);border-radius:99px;padding:10px 16px;font-weight:800;box-shadow:0 3px 12px rgba(20,30,50,.18)}
+
+/* landing */
+.bottomcard{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);background:rgba(255,255,255,.97);border-radius:30px;padding:18px 18px 14px;box-shadow:var(--shadow);z-index:5}
+.avrow{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:15px;color:var(--muted)}
+.avrow b{color:var(--ink)}
+.avs{display:flex}
+.avs canvas{width:44px;height:44px;border-radius:50%;border:3px solid #fff;margin-left:-10px;background:#dfe9f2}
+.avs canvas:first-child{margin-left:0}
+.btnrow{display:flex;gap:10px}
+.bigbtn{flex:1;background:var(--green);color:#fff;font-weight:800;font-size:20px;padding:18px;border-radius:99px;box-shadow:0 8px 20px rgba(76,175,117,.4)}
+.ghostbtn{padding:18px 26px;border-radius:99px;background:#fff;border:1.5px solid #e1e7ee;font-weight:800;font-size:18px}
+.linkrow{display:flex;justify-content:center;gap:16px;margin-top:10px;flex-wrap:wrap}
+.linkbtn{color:var(--muted);font-weight:700;font-size:14px;text-decoration:underline;padding:4px}
+
+/* sheets */
+.overlay{position:fixed;inset:0;background:rgba(20,30,45,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:#fff;color:var(--ink);width:100%;max-width:560px;border-radius:26px 26px 0 0;padding:26px 18px calc(env(safe-area-inset-bottom,0px) + 22px);max-height:90vh;overflow:auto;position:relative}
+.sheet::before{content:"";position:absolute;left:50%;top:9px;width:44px;height:5px;margin-left:-22px;border-radius:9px;background:#d5dbe3}
+.sheet h2{font-weight:800;font-size:23px;letter-spacing:-.02em;margin:6px 0 6px}
+.sheet p{margin-bottom:12px;font-size:15px}
+.small{font-size:13px;color:var(--muted)}
+.choices{display:grid;gap:8px;margin-top:6px}
+.choices.two{grid-template-columns:1fr 1fr}
+.choice{background:#fff;color:var(--ink);text-align:left;padding:14px 16px;border-radius:16px;font-weight:700;border:1.5px solid #dfe5ec}
+.choices.two .choice{padding:11px 12px;font-size:13px}
+.choice:disabled{opacity:.45;cursor:not-allowed}
+.choice:active:not(:disabled){background:#eaf7ef}
+.choice.gold{background:var(--green);color:#fff;border-color:var(--green);text-align:center}
+.txt,select.txt{width:100%;padding:13px 14px;border-radius:14px;border:1.5px solid #dfe5ec;background:#f7f9fb;color:var(--ink);margin-bottom:8px}
+.field-label{font-weight:700;font-size:14px;display:block;margin:10px 0 6px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:38px;height:38px;border-radius:50%;border:3px solid transparent;box-shadow:0 0 0 1px #0003}
+.sw.on{border-color:var(--ink)}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:11px;border-radius:14px;background:#f1f4f8;font-weight:700;border:1.5px solid transparent}
+.seg button.on{background:var(--ink);color:#fff}
+.res{display:grid;grid-template-columns:110px 1fr 42px;gap:8px;align-items:center;font-size:13px;margin:6px 0}
+.res .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res .b{height:12px;background:#e3e8ee;border-radius:99px;overflow:hidden}
+.res .b i{display:block;height:100%;background:var(--green)}
+.res.you .b i{background:var(--red)}
+.res.lead .b i{background:var(--green)}
+.res .pc{text-align:right;font-weight:800}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:15px;margin-bottom:12px}
+.kv b{text-align:right}
+.mapwrap{background:#dcebe0;border-radius:14px;margin:8px 0}
+.mapwrap svg{display:block;width:100%;height:auto}
+.dot{cursor:pointer}
+.info{background:#f4f7fa;border-radius:14px;padding:10px 12px;margin:8px 0;font-size:14px}
+.bundles{display:grid;gap:8px}
+.bundle{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1.5px solid #dfe5ec;border-radius:16px;padding:13px 14px;font-weight:800;text-align:left}
+.bundle span{font-weight:600;font-size:13px;display:block;color:var(--muted)}
+.bundle em{font-style:normal;background:var(--green);color:#fff;padding:7px 12px;border-radius:99px}
+.notice{background:#fff6d6;border-radius:12px;padding:9px 11px;font-size:13px;margin:8px 0}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;font-size:20px;font-weight:800}
+.stepper b{min-width:60px;text-align:center;font-size:18px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.badge{display:inline-block;min-width:18px;padding:0 5px;margin-left:6px;border-radius:99px;background:var(--red);color:#fff;font-size:12px;font-weight:800;text-align:center}
+.msgs{display:flex;flex-direction:column;gap:6px;max-height:40vh;overflow:auto;margin:8px 0;padding:8px;background:#eef2f6;border-radius:14px}
+.msg{max-width:80%;padding:8px 11px;border-radius:14px;font-size:14px;background:#fff;align-self:flex-start;word-break:break-word}
+.msg.me{align-self:flex-end;background:#d8f3e2}
+.chatrow{display:flex;gap:8px}
+.chatrow input{flex:1;margin-bottom:0}
+.chatrow button{padding:0 18px;border-radius:14px;background:var(--green);color:#fff;font-weight:800}
+.person{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;border:1.5px solid #dfe5ec;border-radius:16px;padding:10px 12px;margin:6px 0;font-size:14px}
+.person b{display:block}
+.person button{padding:9px 14px;border-radius:99px;background:var(--green);font-weight:800;color:#fff;white-space:nowrap}
+.dotg{display:inline-block;width:9px;height:9px;border-radius:50%;background:#2e9e5b;margin-right:6px}
+.dotx{background:#9aa5a0}
+.sheet .tabs{margin-bottom:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <canvas id="cv"></canvas>
+  <canvas id="mini" width="220" height="134" hidden></canvas>
+
+  <section id="landing">
+    <div class="stack">
+      <div class="livebar" id="liveL" hidden></div>
+      <div class="topbar">
+        <div class="brand"><span class="badge-logo">★</span>Ghana Life</div><div class="grow"></div>
+        <button class="pillbtn green" id="lSignup">Sign up</button><button class="pillbtn" id="lLogin">Log in</button>
+      </div>
+      <div class="chips" id="lChips"></div>
+      <div class="banner" id="lBanner"></div>
+    </div>
+    <div class="bottomcard">
+      <div class="avrow"><div class="avs" id="lAv"></div><span id="lPlaying">Free to play in your browser</span></div>
+      <div class="btnrow"><button class="bigbtn" id="lMain">Play free</button><button class="ghostbtn" id="lSecond">Log in</button></div>
+      <div class="linkrow"><button class="linkbtn" id="lOffline">Play offline</button><button class="linkbtn" id="lAd">Businesses: advertise here</button></div>
+    </div>
+  </section>
+
+  <section id="game" hidden>
+    <div class="stack">
+      <div class="livebar" id="liveG" hidden></div>
+      <div class="topbar">
+        <div class="brand"><span class="badge-logo">★</span>Ghana Life</div><div class="grow"></div>
+        <div class="cashpill" id="cashPill">₵0</div>
+        <button class="iconbtn" id="phoneBtn" aria-label="Phone">📱</button>
+      </div>
+      <div id="hud" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="toast" id="log" hidden></div>
+    <div class="ctl">
+      <div class="dpad">
+        <button class="d up" data-dir="up" aria-label="Move up">▲</button>
+        <button class="d left" data-dir="left" aria-label="Move left">◀</button>
+        <button class="d down" data-dir="down" aria-label="Move down">▼</button>
+        <button class="d right" data-dir="right" aria-label="Move right">▶</button>
+      </div>
+      <div class="rightcol">
+        <button class="taxibtn" id="taxiBtn">🚕 Taxi</button>
+        <button class="actbtn idle" id="actBtn">Walk to a building</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="overlay" id="modal" hidden role="dialog" aria-modal="true">
+    <div class="sheet" id="sheet"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   CONFIG: fill these in to take REAL payments (see ghana-life-server.js)
+   - PAYSTACK_PUBLIC_KEY: your Paystack PUBLIC key (pk_test_... or pk_live_...)
+   - BACKEND_URL: where you host ghana-life-server.js, no trailing slash
+   While either is empty the game runs in DEMO mode: no real money moves.
+   NEVER put your secret key (sk_...) in this file.
+   ===================================================================== */
+const CONFIG = {
+  PAYSTACK_PUBLIC_KEY: "pk_live_a33d5bd9b2ba796813c30ca8562d0cd0e161b168",   // public key: safe to keep in this file
+  BACKEND_URL: "",             // your server address, e.g. https://ghana-life-server.onrender.com (no slash at the end)
+  ALLOW_DEMO_PAYMENTS: false,  // demo purchases only work when no Paystack key is set
+  AD_PRICE_PER_DAY: 200,       // real GH₵ per billboard per day
+  AD_SLOTS: 30,                // billboards available every day
+  MAX_AD_DAYS: 30
+};
+const BUNDLES = [
+  { id: "starter",  name: "Starter",   ghs: 10,  cedis: 1000 },
+  { id: "hustler",  name: "Hustler",   ghs: 50,  cedis: 6000 },
+  { id: "campaign", name: "Campaign",  ghs: 100, cedis: 14000 },
+  { id: "kingmaker",name: "Kingmaker", ghs: 200, cedis: 32000 }
+];
+
+const SAVE_KEY = "ghanalife_save_v2", ADS_KEY = "ghanalife_ads_v1";
+const $ = id => document.getElementById(id);
+const rnd = (a, b) => Math.floor(a + Math.random() * (b - a + 1));
+const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+const fmt = n => "₵" + Math.round(n).toLocaleString("en-US");
+const ghs = n => "GH₵" + Number(n).toLocaleString("en-US");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const NS = "http://www.w3.org/2000/svg";
+const DAYN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/* ---------------- Data ---------------- */
+const REGIONS = [
+{n:"Ahafo",cap:"Goaso",b:"forest",pop:1.9,lat:6.80,lon:-2.52,jobs:[["Cocoa farm hand",35,60,"You carried cocoa pods all morning."],["Sell plantain at the market",30,95,"You sold plantain by the bunch."]]},
+{n:"Ashanti",cap:"Kumasi",b:"forest",pop:17.6,lat:6.69,lon:-1.62,jobs:[["Load goods at Kejetia",45,75,"You hauled goods through Kejetia."],["Trade kente cloth at Adum",40,140,"You moved kente to a visiting buyer."]]},
+{n:"Bono",cap:"Sunyani",b:"forest",pop:3.9,lat:7.34,lon:-2.33,jobs:[["Harvest cashew",38,65,"You picked cashew apples in the heat."],["Sell cashew nuts",35,100,"You sold bags of roasted cashew."]]},
+{n:"Bono East",cap:"Techiman",b:"forest",pop:3.9,lat:7.59,lon:-1.94,jobs:[["Load yams at Techiman market",40,70,"You loaded yams onto trucks."],["Trade yams and maize",35,105,"You bargained over a pile of yams."]]},
+{n:"Central",cap:"Cape Coast",b:"coast",pop:8.5,lat:5.11,lon:-1.25,jobs:[["Help land fish at Elmina",40,70,"You hauled in nets with the fishermen."],["Guide visitors at the Castle",50,125,"You guided visitors through the castle."]]},
+{n:"Eastern",cap:"Koforidua",b:"forest",pop:9.5,lat:6.09,lon:-0.26,jobs:[["Dry cocoa beans",38,65,"You turned cocoa beans on the drying mats."],["Sell Krobo beads",40,115,"You sold strings of Krobo beads."]]},
+{n:"Greater Accra",cap:"Accra",b:"coast",pop:17.7,lat:5.60,lon:-0.19,jobs:[["Trotro mate at Circle",45,80,"You called out stops all day at Circle."],["Run a mobile money kiosk",50,150,"You processed MoMo transfers non-stop."]]},
+{n:"North East",cap:"Nalerigu",b:"savanna",pop:2.1,lat:10.52,lon:-0.37,jobs:[["Herd cattle",35,60,"You herded cattle across the dry plain."],["Sell smocks",35,100,"You sold hand-woven smocks."]]},
+{n:"Northern",cap:"Tamale",b:"savanna",pop:7.5,lat:9.40,lon:-0.84,jobs:[["Process shea butter",40,68,"You stirred shea butter for hours."],["Trade groundnuts",35,105,"You sold sacks of groundnuts."]]},
+{n:"Oti",cap:"Dambai",b:"lake",pop:2.4,lat:8.07,lon:0.18,jobs:[["Haul fish at Dambai",36,62,"You hauled fish off the lake boats."],["Sell produce at the ferry",32,98,"You sold produce to ferry passengers."]]},
+{n:"Savannah",cap:"Damongo",b:"savanna",pop:2.1,lat:9.08,lon:-1.82,jobs:[["Pick mangoes",34,60,"You filled crates with ripe mangoes."],["Guide visitors at Mole Park",50,125,"You spotted elephants for visitors."]]},
+{n:"Upper East",cap:"Bolgatanga",b:"savanna",pop:4.2,lat:10.79,lon:-0.85,jobs:[["Work an onion farm",35,62,"You weeded onion beds in the sun."],["Sell Bolga baskets",38,115,"You sold woven Bolga baskets."]]},
+{n:"Upper West",cap:"Wa",b:"savanna",pop:2.9,lat:10.06,lon:-2.51,jobs:[["Farm hand near Wa",34,60,"You worked a millet field."],["Sell shea and yams",32,100,"You sold shea and yams at the market."]]},
+{n:"Volta",cap:"Ho",b:"lake",pop:5.4,lat:6.60,lon:0.47,jobs:[["Fish on Lake Volta",38,68,"You fished before sunrise on the lake."],["Sell kente at Agbozume",40,125,"You sold Ewe kente to a trader."]]},
+{n:"Western",cap:"Sekondi-Takoradi",b:"coast",pop:6.9,lat:4.90,lon:-1.76,jobs:[["Port and rig support crew",60,110,"You worked a shift with the support crew."],["Sell fresh fish at the harbour",38,115,"You sold fresh fish at the harbour."]]},
+{n:"Western North",cap:"Sefwi Wiawso",b:"forest",pop:2.9,lat:6.20,lon:-2.49,jobs:[["Cocoa and timber hand",38,65,"You carried timber off the forest road."],["Sell cocoa beans",35,105,"You sold sacks of cocoa beans."]]}
+];
+const POPSUM = REGIONS.reduce((s, r) => s + r.pop, 0);
+const SKINS = ["#f0c9a0", "#c68642", "#a56a3a", "#8d5524", "#6f4320", "#4a2c17"];
+const OUTFITS = ["#CE1126", "#FCD116", "#006B3F", "#1e5fbf", "#7b2d8e", "#222222"];
+const HAIRS = ["Short", "Twists", "Headwrap"];
+const PARTIES = ["Black Star Union", "People's Progress Front"];
+const RIVALS = ["Kofi Mensah", "Efua Tetteh", "Abena Owusu", "Yaw Darko", "Kojo Appiah", "Akosua Danso", "Kwesi Antwi", "Ama Boakye", "Nii Lamptey", "Selorm Agbeko", "Fatima Alhassan", "Issah Yakubu"];
+const rname = () => RIVALS[rnd(0, RIVALS.length - 1)];
+const GROUND = { forest: "#5a9a4e", coast: "#93b463", savanna: "#bfae62", lake: "#78a85d" };
+
+/* Landmark kinds: l=label, c=body, r=roof, m=minimap colour */
+const KINDS = {
+  work: { l: "Work depot", c: "#9b8a4a", r: "#006B3F", m: "#22c55e" },
+  market: { l: "Market", c: "#c98a3a", r: "#CE1126", m: "#f59e0b" },
+  training: { l: "Training centre", c: "#4b78b8", r: "#1e3f7a", m: "#60a5fa" },
+  chop: { l: "Chop bar", c: "#c0603a", r: "#FCD116", m: "#fb923c" },
+  club: { l: "Club", c: "#3b1f5c", r: "#111111", m: "#d946ef" },
+  church: { l: "Church", c: "#cfd8e3", r: "#5a6b8a", m: "#ffffff" },
+  mosque: { l: "Mosque", c: "#e8efe9", r: "#0f7a4d", m: "#34d399" },
+  hospital: { l: "Clinic", c: "#f4f6f7", r: "#CE1126", m: "#ef4444" },
+  momo: { l: "MoMo shop", c: "#e0b52a", r: "#006B3F", m: "#facc15" },
+  station: { l: "Lorry station", c: "#4f7f90", r: "#CE1126", m: "#f43f5e" },
+  party: { l: "Party office", c: "#6e7396", r: "#222222", m: "#b0b0b0" },
+  mall: { l: "Mall", c: "#5aa3c9", r: "#1e5a7a", m: "#38bdf8" },
+  cardealer: { l: "Car dealer", c: "#b34040", r: "#222222", m: "#f87171" },
+  hotel: { l: "Hotel", c: "#7d86c9", r: "#2d3375", m: "#818cf8" },
+  realty: { l: "Estate agent", c: "#3a9a8f", r: "#0f5a52", m: "#2dd4bf" },
+  billboard: { l: "Billboard", c: "#444444", r: "#444444", m: "#FCD116" },
+  fbi: { l: "FBI office", c: "#2a3f66", r: "#111111", m: "#1e40af" },
+  airport: { l: "Airport", c: "#aac0d4", r: "#2d6fb0", m: "#0ea5e9" },
+  home: { l: "Home", c: "#9b6a45", r: "#CE1126", m: "#fff200" }
+};
+/* Property kinds that can be bought */
+const PROPS = {
+  house: { n: "House", base: 9000, rate: 0.05 },
+  apartment: { n: "Apartment block", base: 22000, rate: 0.05 },
+  shop: { n: "Shop", base: 14000, rate: 0.06 },
+  plot: { n: "Plot of land", base: 5000, rate: 0 },
+  warehouse: { n: "Warehouse", base: 30000, rate: 0.055 },
+  guesthouse: { n: "Guest house", base: 45000, rate: 0.055 }
+};
+const HOME_LEVELS = [
+  { n: "Rented room", cost: 0, bonus: 0 },
+  { n: "Your own small house", cost: 4000, bonus: 8 },
+  { n: "Two-bedroom home", cost: 10000, bonus: 16 },
+  { n: "Furnished 3-bedroom with generator", cost: 28000, bonus: 24 },
+  { n: "Duplex with solar power", cost: 85000, bonus: 32 },
+  { n: "Mansion with a gold roof", cost: 250000, bonus: 40 }
+];
+
+/* ---------------- State ---------------- */
+let S = null, lastEvent = "";
+let look = { skin: 3, outfit: 0, hair: 0 };
+const SLOTS = ["Morning", "Afternoon", "Evening"];
+const wd = () => (S.day - 1) % 7;
+function payMult() { return 1 + S.rep / 400 + S.skill * 0.06 + (S.phone ? 0.08 : 0) + (lawOn("market") ? 0.1 : 0); }
+function say(m) { if (m) { S.log.unshift(m); S.log = S.log.slice(0, 30); } }
+function clampAll() { S.energy = clamp(S.energy); S.hunger = clamp(S.hunger); S.rep = clamp(S.rep); S.cash = Math.max(0, Math.round(S.cash)); S.skill = Math.min(10, S.skill); }
+function save() { if (!S || S.demo) return; if (!AUTH) { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} } cloudSaveSoon(); }
+function loadSave() { try { const j = localStorage.getItem(SAVE_KEY); return j ? JSON.parse(j) : null; } catch (e) { return null; } }
+function netWorth() { return S.cash + Object.values(S.props).reduce((s, p) => s + p.value, 0); }
+function weeklyIncome() { return Math.round(Object.values(S.props).reduce((s, p) => s + p.value * PROPS[p.type].rate, 0)); }
+
+/* ---------------- Sheets (modal queue) ---------------- */
+let sheetOpen = false; const sheetQ = [];
+function clearInput() { Object.keys(keys).forEach(k => { keys[k] = false; }); Object.keys(joy).forEach(k => { joy[k] = 0; }); document.querySelectorAll(".d").forEach(b => b.classList.remove("held")); }
+function showSheet(fn) { sheetQ.push(fn); if (!sheetOpen) nextSheet(); }
+function nextSheet() {
+  const fn = sheetQ.shift();
+  if (!fn) { sheetOpen = false; $("modal").hidden = true; if (S) S.busy = false; return; }
+  sheetOpen = true; if (S) S.busy = true; clearInput();
+  const el = $("sheet"); el.innerHTML = ""; $("modal").hidden = false;
+  fn(el, nextSheet); el.scrollTop = 0;
+}
+function mk(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+function ask(title, body, choices, done) {
+  if (ASKFILTER) { const re = ASKFILTER; choices = choices.filter(c => c.label === "Leave" || re.test(c.label)); }
+  showSheet((el, close) => {
+    el.append(mk("h2", "", title), mk("p", "", body));
+    const box = mk("div", "choices"); el.append(box);
+    let first = null;
+    choices.forEach(c => {
+      const b = mk("button", "choice", c.label);
+      const why = c.lock || (c.need && S.cash < c.need ? "not enough cash" : "");
+      if (why) { b.disabled = true; b.textContent += " (" + why + ")"; }
+      b.onclick = () => {
+        const msg = c.fn ? c.fn() : "";
+        if (INSIDE) { INSIDE.spec = buildSpec(INSIDE.b); unstick(); }
+        say(msg); clampAll(); close(); render();
+        if (c.time) afterTimed(c.slots || 1);
+        if (c.after) c.after();
+        if (done) done();
+      };
+      box.append(b);
+      if (!first && !b.disabled) first = b;
+    });
+    if (first) first.focus();
+  });
+}
+function infoSheet(title, build) {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", title)); build(el);
+    const b = mk("button", "choice gold", "Close"); b.onclick = close; el.append(b);
+  });
+}
+function resultSheet(title, body, rows, extra) {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", title), mk("p", "", body));
+    const top = Math.max(...rows.map(r => r.pct));
+    rows.forEach(r => {
+      const d = mk("div", "res" + (r.you ? " you" : "") + (r.pct === top ? " lead" : ""));
+      const bar = mk("div", "b"); const i = document.createElement("i"); i.style.width = r.pct + "%"; bar.append(i);
+      d.append(mk("span", "nm", r.label), bar, mk("span", "pc", r.pct + "%")); el.append(d);
+    });
+    if (extra) el.append(mk("p", "small", extra));
+    const b = mk("button", "choice gold", "Continue"); b.onclick = close; el.append(b); b.focus();
+  });
+}
+
+/* ---------------- Time flow ---------------- */
+function afterTimed(n) {
+  clampAll();
+  if (S.hunger >= 100) { S.cash = Math.max(0, S.cash - 50); S.hunger = 55; S.energy = clamp(S.energy - 20); say("You nearly fainted from hunger. The clinic cost ₵50."); }
+  save(); render();
+  if (Math.random() < 0.3) { const ev = pickEvent(); ask(ev.title, ev.body, ev.choices, () => advance(n)); }
+  else advance(n);
+}
+function advance(n) { for (let i = 0; i < n; i++) { S.slot++; if (S.slot >= 3) endDay(); } render(); save(); }
+function endDay() {
+  S.hunger += 10; S.energy += 55; S.slot = 0; S.day++; clampAll();
+  say(DAYN[wd()] + ", day " + S.day + " begins.");
+  S.pending = S.pending.filter(p => { if (S.day >= p.day) { S.cash += p.amount; say(p.msg); return false; } return true; });
+  if ((S.day - 1) % 7 === 0) weekly();
+  if (S.race) { drift(); if (S.day >= S.race.electionDay) resolveElection(); }
+  checkFbi();
+}
+function weekly() {
+  const L = S.home.level;
+  if (L === 0) {
+    const rent = Math.round(150 * (lawOn("rent") ? 0.5 : 1));
+    if (S.cash >= rent) { S.cash -= rent; say("Weekly rent and bills: " + fmt(rent) + "."); }
+    else { say("You could only pay " + fmt(S.cash) + " of the rent. Your reputation took a hit."); S.cash = 0; S.rep -= 5; }
+  } else { const bills = Math.round(40 * L * (lawOn("rent") ? 0.5 : 1)); S.cash = Math.max(0, S.cash - bills); say("Home maintenance and bills: " + fmt(bills) + "."); S.rep += L * 0.5; }
+  if (S.role === "mp") { S.cash += 1500; addInc("salary", 1500); say("MP salary paid: ₵1,500."); }
+  if (S.role === "president") { S.cash += 8000; addInc("salary", 8000); say("Presidential salary paid: ₵8,000."); }
+  let inc = 0;
+  Object.values(S.props).forEach(p => { if (p.type === "plot") p.value = Math.round(p.value * 1.03); else inc += p.value * PROPS[p.type].rate * (0.85 + Math.random() * 0.3) * furnRent(p); });
+  if (inc) { inc = Math.round(inc); S.cash += inc; addInc("rent", inc); say("Your properties earned " + fmt(inc) + " in rent this week."); }
+  S.rep += styleF(S.home.furn) * 0.3;
+  { const nl = LAWS[rnd(0, LAWS.length - 1)]; S.law = nl.id; say("New law this week: " + nl.t + "."); }
+  clampAll();
+}
+
+/* ---------------- Random events ---------------- */
+const EVENTS = [
+ { id: "dumsor", title: "Dumsor strikes", body: "The power is off again and your phone is nearly dead.", choices: [
+  { label: "Pay ₵20 to charge at a shop", need: 20, fn() { S.cash -= 20; return "You paid ₵20 to charge your phone."; } },
+  { label: "Sit in the heat", fn() { S.energy -= 6; return "No fan, no light. You lost some energy."; } } ] },
+ { id: "traffic", title: "Gridlock", body: "The road is jammed and you need to get through.", choices: [
+  { label: "Take an okada · ₵25", need: 25, fn() { S.cash -= 25; return "The okada rider weaved through. You paid ₵25."; } },
+  { label: "Wait it out", fn() { S.energy -= 10; return "Two hours in the jam. You lost energy."; } } ] },
+ { id: "funeral", title: "Funeral invitation", body: "A relative's funeral is this weekend. Everyone will be there.", choices: [
+  { label: "Give a generous donation · ₵150", need: 150, fn() { S.cash -= 150; S.rep += 8; return "Your donation was announced. Your reputation grew."; } },
+  { label: "Give a modest donation · ₵30", need: 30, fn() { S.cash -= 30; S.rep += 2; return "You gave ₵30 and paid your respects."; } },
+  { label: "Skip it", fn() { S.rep -= 3; return "People noticed you were not there."; } } ] },
+ { id: "momo", title: "Wrong transfer", body: "An SMS says ₵2,000 was sent to you by mistake and asks you to send ₵500 back.", choices: [
+  { label: "Send ₵500 back", need: 500, fn() { S.cash -= 500; return "It was a scam. The ₵500 is gone."; } },
+  { label: "Check your balance and report it", fn() { S.rep += 1; return "No money had arrived. You reported the number."; } } ] },
+ { id: "harmattan", title: "Harmattan dust", body: "The dry dusty wind has everyone coughing.", choices: [
+  { label: "Buy lozenges and shea butter · ₵30", need: 30, fn() { S.cash -= 30; return "You stayed comfortable through the dust."; } },
+  { label: "Just endure it", fn() { S.energy -= 10; return "The dust wore you down."; } } ] },
+ { id: "cousin", title: "Family needs help", body: "Your cousin needs ₵200 for school fees.", choices: [
+  { label: "Send ₵200", need: 200, fn() { S.cash -= 200; S.rep += 5; return "You sent ₵200. Your family is proud."; } },
+  { label: "Send ₵50 and explain", need: 50, fn() { S.cash -= 50; S.rep += 1; return "You sent ₵50 and explained your situation."; } },
+  { label: "Say you are also struggling", fn() { return "You told the truth. It still felt bad."; } } ] },
+ { id: "waakye", title: "Waakye promo", body: "A seller near you is doing a special on waakye.", choices: [
+  { label: "Buy it · ₵15", need: 15, fn() { S.cash -= 15; S.hunger -= 45; return "Waakye with all the toppings. Full and happy."; } },
+  { label: "Pass", fn() { return "You walked past with discipline."; } } ] },
+ { id: "tip", title: "Generous customer", body: "A customer loved your service and presses cash into your hand.", choices: [
+  { label: "Say thank you and take it", fn() { const t = rnd(60, 140); S.cash += t; return "You received a " + fmt(t) + " tip."; } } ] },
+ { id: "rain", title: "Sudden downpour", body: "Heavy rain catches everyone off guard.", choices: [
+  { label: "Stay dry and wait", fn() { S.energy += 10; return "You waited it out and recovered a little."; } },
+  { label: "Sell umbrellas and sachet water", fn() { const e = rnd(60, 120); S.cash += e; S.energy -= 10; return "You sold to stranded people and made " + fmt(e) + "."; } } ] },
+ { id: "durbar", title: "Durbar invitation", body: "The local chief invites you to a durbar. Attending means dressing well.", choices: [
+  { label: "Attend · ₵50", need: 50, fn() { S.cash -= 50; S.rep += 10; return "You were seen with the chief. Your reputation grew."; } },
+  { label: "Send apologies", fn() { return "You sent your apologies."; } } ] },
+ { id: "susu", title: "Susu contribution", body: "A trusted group runs a susu. Put in ₵500 now and get ₵700 back in 3 days.", choices: [
+  { label: "Join · ₵500", need: 500, fn() { S.cash -= 500; S.pending.push({ day: S.day + 3, amount: 700, msg: "Your susu paid out ₵700." }); return "You joined the susu. Payout in 3 days."; } },
+  { label: "Not this time", fn() { return "You skipped the susu."; } } ] },
+ { id: "tenant", title: "Tenant trouble", body: "A tenant in one of your buildings says the roof is leaking.", choices: [
+  { label: "Fix it quickly · ₵150", need: 150, fn() { S.cash -= 150; S.rep += 2; return "You paid ₵150 for repairs. The tenant was grateful."; } },
+  { label: "Promise to fix it later", fn() { S.rep -= 2; return "The tenant was not impressed."; } } ] }
+];
+function pickEvent() {
+  const pool = EVENTS.filter(e => (e.id !== "tenant" || Object.keys(S.props).length) && !(e.id === "dumsor" && S.home.furn && S.home.furn.gen));
+  let e; do { e = pool[rnd(0, pool.length - 1)]; } while (e.id === lastEvent); lastEvent = e.id; return e;
+}
+
+/* ---------------- Opening buildings ---------------- */
+function displayName(b) {
+  if (b.kind === "home") return S.region === S.home.region ? "Home" : "Guest house";
+  if (PROPS[b.kind]) { const p = S.props[b.key]; return p ? "Your " + PROPS[p.type].n.toLowerCase() : PROPS[b.kind].n + " for sale"; }
+  return b.name;
+}
+function openBuilding(b) {
+  if (!S || S.busy) return;
+  if (hasInterior(b)) return enterBuilding(b);
+  if (PROPS[b.kind]) return propertyMenu(b);
+  if (b.kind === "billboard") return billboardSheet(b);
+}
+
+/* ---- Home ---- */
+function homeMenu() {
+  if (S.region !== S.home.region) {
+    return ask("Guest house", "You are away from home. A room here costs ₵60.", [
+      { label: "Rent a room and rest · ₵60, energy +35", need: 60, time: true, fn() { S.cash -= 60; S.energy += 35; S.hunger += 10; return "You rested in a guest house."; } },
+      { label: "Leave" }]);
+  }
+  const L = S.home.level, H = HOME_LEVELS[L], left = 3 - S.slot, nxt = HOME_LEVELS[L + 1], fb = restBonusF(S.home.furn), gain = 35 + H.bonus + fb;
+  const ch = [
+    { label: "Rest · energy +" + gain, time: true, fn() { S.energy += gain; S.hunger += 10; startRest(); return "You rested at home."; } },
+    { label: "Sleep it off · skip " + left + " slot" + (left > 1 ? "s" : ""), time: true, slots: left, fn() { S.energy += (25 + (H.bonus + fb) / 2) * left; S.hunger += 5 * left; startRest(); return "You slept through part of the day."; } }
+  ];
+  if (nxt) ch.push({ label: "Upgrade to: " + nxt.n + " · " + fmt(nxt.cost), need: nxt.cost, fn() { S.cash -= nxt.cost; S.home.level++; S.rep += 3; return "Home upgraded: " + nxt.n + "."; } });
+  ch.push({ label: "My profile", after: profileSheet }, { label: "Leave" });
+  ask("Home", HOME_LEVELS[L].n + ". Resting here gives +" + gain + " energy." + (L === 0 ? " Rent is ₵150 a week until you buy." : ""), ch);
+}
+function profileSheet() {
+  infoSheet(S.name, el => {
+    const kv = mk("div", "kv");
+    const rows = [["Role", S.role === "mp" ? "Member of Parliament" : S.role === "president" ? "President" : "Citizen"], ["Party", S.party || "None"],
+      ["Home", HOME_LEVELS[S.home.level].n + " in " + REGIONS[S.home.region].cap], ["Reputation", Math.round(S.rep)], ["Trade skill", S.skill + " of 10"],
+      ["Properties", Object.keys(S.props).length + " (about " + fmt(weeklyIncome()) + " a week)"], ["Car", ["None", "Used car", "Luxury SUV"][S.car]], ["Net worth", fmt(netWorth())], ["Day", DAYN[wd()] + ", day " + S.day]];
+    rows.forEach(r => { kv.append(mk("span", "", r[0]), mk("b", "", String(r[1]))); }); el.append(kv);
+  });
+}
+
+/* ---- Work and learning ---- */
+function jobChoice(j, stock, bonus) {
+  const m = payMult();
+  return { label: j[0] + " · about " + fmt(j[1] * m * bonus) + " to " + fmt(j[2] * m * bonus) + (stock ? " (stock ₵" + stock + ")" : ""), need: stock, lock: S.energy < 25 ? "too tired" : "", time: true,
+    fn() { S.cash -= stock; S.energy -= 25; S.hunger += 20;
+      if (stock && Math.random() < 0.15) return "Slow day. Nobody bought much and you lost your ₵" + stock + " stock money.";
+      const p = Math.round(rnd(j[1], j[2]) * m * bonus); S.cash += p; addInc(stock ? "trade" : "labour", p); return j[3] + " You earned " + fmt(p) + "."; } };
+}
+function workMenu() { const R = REGIONS[S.region]; ask("Work depot", "Steady labour in " + R.cap + ".", [jobChoice(R.jobs[0], 0, 1), { label: "Leave" }]); }
+function marketMenu(b) { const R = REGIONS[S.region]; ask(b.name, "Trading is riskier but pays more.", [jobChoice(R.jobs[1], 30, 1.15), { label: "Leave" }]); }
+function trainingMenu() {
+  ask("Training centre", "Every skill level raises your pay by 6%. Your skill is " + S.skill + " of 10.", [
+    { label: "Short course · ₵80, skill +1", need: 80, lock: S.skill >= 10 ? "max skill" : (S.energy < 15 ? "too tired" : ""), time: true, fn() { S.cash -= 80; S.skill += 1; S.energy -= 15; S.hunger += 10; return "You finished a short course. Trade skill is now " + Math.min(10, S.skill) + "."; } },
+    { label: "Bootcamp · ₵400, skill +3, two slots", need: 400, lock: S.skill >= 10 ? "max skill" : (S.energy < 30 ? "too tired" : ""), time: true, slots: 2, fn() { S.cash -= 400; S.skill += 3; S.energy -= 30; S.hunger += 20; return "Bootcamp done. Trade skill is now " + Math.min(10, S.skill) + "."; } },
+    { label: "Leave" }]);
+}
+function chopMenu(b) {
+  const fp = n => Math.round(n * (lawOn("food") ? 0.7 : 1));
+  ask(b.name, "Your hunger is at " + Math.round(S.hunger) + "%. Eating does not use a time slot." + (lawOn("food") ? " Food subsidy: 30% off." : ""), [
+    { label: "Kenkey and pepper · " + fmt(fp(10)), need: fp(10), fn() { S.cash -= fp(10); S.hunger -= 25; return "Kenkey and pepper. Simple and filling."; } },
+    { label: "Waakye with egg · " + fmt(fp(25)), need: fp(25), fn() { S.cash -= fp(25); S.hunger -= 45; return "Waakye with egg. Solid."; } },
+    { label: "Banku and tilapia · " + fmt(fp(45)), need: fp(45), fn() { S.cash -= fp(45); S.hunger -= 65; S.energy += 5; return "Banku and tilapia. Worth every cedi."; } },
+    { label: "Leave" }]);
+}
+
+/* ---- Nightlife and faith ---- */
+function boostSupport(v) {
+  const r = S.race; if (!r) return "";
+  if (r.type === "mp") { if (S.region !== r.region) return ""; r.support += v; } else r.support[S.region] += v;
+  return " Campaign support +" + v + ".";
+}
+function clubMenu(b) {
+  const night = S.slot === 2, lock = night ? "" : "opens in the evening";
+  ask(b.name, "The music is loud and the whole city is here. Open in the evening only.", [
+    { label: "Dance and mingle · entry ₵50", need: 50, lock: lock || (S.energy < 15 ? "too tired" : ""), time: true,
+      fn() { S.cash -= 50; S.rep += 3; S.energy -= 15; S.hunger += 10; if (Math.random() < 0.2) { S.cash += 300; return "You danced all night and a sponsor slipped you ₵300."; } return "You danced all night. Your reputation grew."; } },
+    { label: "Book a VIP table · ₵600", need: 600, lock: lock || (S.energy < 15 ? "too tired" : ""), time: true,
+      fn() { S.cash -= 600; S.rep += 12; S.energy -= 15; S.hunger += 10; if (Math.random() < 0.4) { S.cash += 1500; return "At the VIP table you met a businessman who paid you ₵1,500 for a favour."; } return "VIP life. Your reputation jumped."; } },
+    { label: "Hire the DJ for a campaign party · ₵2,500", need: 2500, lock: lock || (!S.race ? "no campaign running" : ""), time: true,
+      fn() { S.cash -= 2500; S.rep += 2; S.hunger += 10; return "The DJ turned your party into a rally." + boostSupport(12); } },
+    { label: "Leave" }]);
+}
+function churchMenu(b) {
+  const sun = wd() === 6 && S.slot === 0;
+  ask(b.name, "A place of peace. The big service is on Sunday morning. Today is " + DAYN[wd()] + ".", [
+    { label: "Attend Sunday service · reputation +8", lock: sun ? "" : "Sunday morning only", time: true, fn() { S.rep += 8; S.energy += 5; S.hunger += 10; return "You worshipped with the congregation. Your reputation grew."; } },
+    { label: "Meet the congregation for your campaign", lock: !S.race ? "no campaign running" : (sun ? "" : "Sunday morning only"), time: true, fn() { S.rep += 2; S.hunger += 10; return "People wished you well after the service." + boostSupport(6); } },
+    { label: "Pray quietly · energy +10", time: true, fn() { S.energy += 10; return "A quiet hour of prayer. You feel steadier."; } },
+    { label: "Give a tithe · ₵50, reputation +2", need: 50, fn() { S.cash -= 50; S.rep += 2; return "You gave ₵50 to the church."; } },
+    { label: "Give a large offering · ₵200, reputation +6", need: 200, fn() { S.cash -= 200; S.rep += 6; return "Your generous offering was noticed."; } },
+    { label: "Leave" }]);
+}
+function mosqueMenu(b) {
+  const fri = wd() === 4 && S.slot === 1;
+  ask(b.name, "Open to all. Jumu'ah prayers are on Friday afternoon. Today is " + DAYN[wd()] + ".", [
+    { label: "Join Friday prayers · reputation +8", lock: fri ? "" : "Friday afternoon only", time: true, fn() { S.rep += 8; S.energy += 5; S.hunger += 10; return "You prayed with the community. Your reputation grew."; } },
+    { label: "Meet the community for your campaign", lock: !S.race ? "no campaign running" : (fri ? "" : "Friday afternoon only"), time: true, fn() { S.rep += 2; S.hunger += 10; return "The community welcomed you." + boostSupport(6); } },
+    { label: "Pray quietly · energy +10", time: true, fn() { S.energy += 10; return "A quiet hour of prayer. You feel steadier."; } },
+    { label: "Give sadaqa · ₵50, reputation +2", need: 50, fn() { S.cash -= 50; S.rep += 2; return "You gave ₵50 in charity."; } },
+    { label: "Leave" }]);
+}
+
+/* ---- City services ---- */
+function hospitalMenu(b) {
+  ask(b.name, "Energy is low? Get checked out.", [
+    { label: "See the nurse · ₵60, energy +25", need: 60, time: true, fn() { S.cash -= 60; S.energy += 25; return "The nurse sorted you out."; } },
+    { label: "Full check-up · ₵150, energy +50", need: 150, time: true, fn() { S.cash -= 150; S.energy += 50; S.hunger -= 10; return "A full check-up and a good rest."; } },
+    { label: "Leave" }]);
+}
+function hotelMenu(b) {
+  ask(b.name, "Business people meet here.", [
+    { label: "Book a room for a nap · ₵150, energy +45", need: 150, time: true, fn() { S.cash -= 150; S.energy += 45; S.hunger += 5; return "You napped in a proper bed."; } },
+    { label: "Network in the lounge · ₵100, reputation +4", need: 100, lock: S.energy < 10 ? "too tired" : "", time: true, fn() { S.cash -= 100; S.rep += 4; S.energy -= 10; S.hunger += 10; if (Math.random() < 0.25) { S.cash += 500; return "You closed a small deal in the lounge. +₵500."; } return "You made useful contacts."; } },
+    { label: "Leave" }]);
+}
+function mallMenu(b) {
+  ask(b.name, "Look good, earn more.", [
+    { label: "Designer outfit · ₵600, reputation +6", need: 600, fn() { S.cash -= 600; S.rep += 6; return "You bought a designer outfit. People noticed."; } },
+    { label: "Smartphone · ₵1,500, pay +8% forever", need: 1500, lock: S.phone ? "already owned" : "", fn() { S.cash -= 1500; S.phone = true; return "New smartphone. Your pay is now 8% higher."; } },
+    { label: "Leave" }]);
+}
+function carMenu(b) {
+  ask(b.name, "Cars make you faster and cut your travel fares.", [
+    { label: "Used car · ₵15,000, faster, half fares", need: 15000, lock: S.car >= 1 ? "already owned" : "", fn() { S.cash -= 15000; S.car = 1; S.rep += 4; return "You bought a used car."; } },
+    { label: "Luxury SUV · ₵90,000, fastest, tiny fares", need: 90000, lock: S.car >= 2 ? "already owned" : "", fn() { S.cash -= 90000; S.car = 2; S.rep += 12; return "You bought a luxury SUV. Everyone turned to look."; } },
+    { label: "Leave" }]);
+}
+function momoMenu() {
+  ask("MoMo shop", "Top up your game wallet with real money.", [
+    { label: "Buy game cedis with real money", after: shopSheet }, { label: "Leave" }]);
+}
+
+/* ---- Real estate ---- */
+function propertyMenu(b) {
+  const p = S.props[b.key], R = REGIONS[S.region], T = PROPS[b.kind];
+  if (!p) {
+    const inc = Math.round(b.price * T.rate);
+    return ask(b.name, T.n + " for sale in " + R.cap + ". Price " + fmt(b.price) + ". " + (T.rate ? "Earns about " + fmt(inc) + " a week." : "Land value grows about 3% a week. You can build a house on it later."), [
+      { label: "Buy for " + fmt(b.price), need: b.price, fn() { S.cash -= b.price; S.props[b.key] = { type: b.kind, name: b.name, region: S.region, base: b.price, value: b.price, level: 0 }; S.rep += 2; return "You bought " + b.name + " in " + R.cap + "."; } },
+      { label: "Leave" }]);
+  }
+  const PT = PROPS[p.type], ch = [], inc = Math.round(p.value * PT.rate);
+  if (p.type === "plot") {
+    const bc = Math.round(p.value * 1.5 / 100) * 100;
+    ch.push({ label: "Build a house here · " + fmt(bc), need: bc, fn() { S.cash -= bc; p.type = "house"; p.base = p.value + bc; p.value = p.base; p.level = 0; return "A new house now stands on your plot."; } });
+  } else {
+    const rc = Math.round(p.base * 0.35 / 100) * 100;
+    ch.push({ label: "Renovate · " + fmt(rc) + ", value and rent +45%", need: rc, lock: p.level >= 3 ? "fully renovated" : "", fn() { S.cash -= rc; p.level++; p.value = Math.round(p.base * (1 + 0.45 * p.level)); return "You renovated " + p.name + ". Its value and rent went up."; } });
+  }
+  const sale = Math.round(p.value * 0.9);
+  ch.push({ label: "Sell for " + fmt(sale), fn() { S.cash += sale; delete S.props[b.key]; return "You sold " + p.name + " for " + fmt(sale) + "."; } }, { label: "Leave" });
+  ask(p.name, "You own this " + PT.n.toLowerCase() + ". Value " + fmt(p.value) + (PT.rate ? ", rent about " + fmt(inc) + " a week." : ", growing about 3% a week."), ch);
+}
+function realtyMenu() {
+  ask("Estate agent", "You own " + Object.keys(S.props).length + " properties worth " + fmt(Object.values(S.props).reduce((s, p) => s + p.value, 0)) + ", earning about " + fmt(weeklyIncome()) + " a week.", [
+    { label: "See my properties", after: ownedSheet },
+    { label: "Properties for sale in " + REGIONS[S.region].cap, after: forSaleSheet },
+    { label: "Leave" }]);
+}
+function ownedSheet() {
+  infoSheet("My properties", el => {
+    const list = Object.values(S.props);
+    if (!list.length) el.append(mk("p", "", "You do not own any property yet. Look for For sale signs around the city."));
+    list.forEach(p => { const d = mk("div", "info"); d.textContent = p.name + " in " + REGIONS[p.region].n + ". Value " + fmt(p.value) + (PROPS[p.type].rate ? ", rent about " + fmt(p.value * PROPS[p.type].rate) + " a week." : ", growing."); el.append(d); });
+  });
+}
+function forSaleSheet(filter) {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "For sale in " + REGIONS[S.region].cap), mk("p", "", "Cheapest first. Tap one to take a taxi there."));
+    const box = mk("div", "choices"); el.append(box);
+    CITY.buildings.filter(b => PROPS[b.kind] && !S.props[b.key] && (!filter || filter(b))).sort((a, b) => a.price - b.price).slice(0, 12).forEach(b => {
+      const fare = taxiFare(b), btn = mk("button", "choice", b.name + " · " + fmt(b.price)); if (S.cash < fare) { btn.disabled = true; }
+      btn.onclick = () => { S.cash -= fare; placeAt(b); close(); say("You took a taxi to " + b.name + "."); render(); }; box.append(btn);
+    });
+    const c = mk("button", "choice gold", "Close"); c.onclick = close; el.append(c);
+  });
+}
+
+/* ---------------- Travel between regions ---------------- */
+function km(a, b) {
+  const A = REGIONS[a], B = REGIONS[b], dy = (A.lat - B.lat) * 111, dx = (A.lon - B.lon) * 111 * Math.cos((A.lat + B.lat) / 2 * Math.PI / 180);
+  return Math.hypot(dx, dy);
+}
+const MX = lon => 20 + (lon + 3.3) / 4.6 * 260, MY = lat => 20 + (11.3 - lat) / 6.6 * 300;
+function travelSheet() {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Lorry station"), mk("p", "", "Tap a region on the map. Long trips cost two time slots." + (S.car ? " Your car cuts the fare." : "")));
+    const wrap = mk("div", "mapwrap"); const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 300 340");
+    const pts = [[-3.1,5.0],[-2.0,4.75],[-1.0,5.0],[0.0,5.6],[0.6,5.8],[1.2,6.1],[0.65,7.5],[0.5,8.5],[0.35,9.4],[0.0,11.0],[-0.3,11.15],[-2.9,11.0],[-2.7,9.5],[-2.8,8.5],[-2.7,7.5],[-3.1,6.0],[-3.25,5.1]];
+    const poly = document.createElementNS(NS, "polygon"); poly.setAttribute("points", pts.map(p => MX(p[0]) + "," + MY(p[1])).join(" "));
+    poly.setAttribute("fill", "#8fc79e"); poly.setAttribute("stroke", "#0A3D2A"); poly.setAttribute("stroke-width", "2"); svg.append(poly);
+    const info = mk("div", "info"); const go = mk("button", "choice gold", "Pick a region"); go.disabled = true;
+    const dots = [];
+    function show(i) {
+      const R = REGIONS[i]; dots.forEach((d, j) => d.setAttribute("stroke-width", j === i ? 4 : (j === S.region ? 3 : 1)));
+      if (i === S.region) { info.textContent = "You are in " + R.n + " Region (" + R.cap + ")."; go.textContent = "You are here"; go.disabled = true; return; }
+      const d = km(S.region, i), fare = Math.round((15 + d * 0.18) * [1, 0.5, 0.3][S.car] * (lawOn("fuel") ? 0.7 : 1)), slots = d >= 250 ? 2 : 1, en = Math.min(30, Math.round(d / 15));
+      info.textContent = R.n + " Region (" + R.cap + "). About " + Math.round(d) + " km. Fare " + fmt(fare) + ", " + slots + " slot" + (slots > 1 ? "s" : "") + ", energy −" + en + ".";
+      go.textContent = "Travel to " + R.cap; go.disabled = S.cash < fare || S.energy < en;
+      if (S.cash < fare) go.textContent += " (not enough cash)"; else if (S.energy < en) go.textContent += " (too tired)";
+      go.onclick = () => { S.cash -= fare; S.energy -= en; S.hunger += slots * 10; S.region = i; resetPlayer(); say("You travelled to " + R.cap + ", " + R.n + " Region."); close(); render(); afterTimed(slots); };
+    }
+    REGIONS.forEach((R, i) => {
+      const c = document.createElementNS(NS, "circle"); c.setAttribute("cx", MX(R.lon)); c.setAttribute("cy", MY(R.lat)); c.setAttribute("r", 11);
+      c.setAttribute("fill", i === S.region ? "#CE1126" : "#FCD116"); c.setAttribute("stroke", "#000"); c.setAttribute("stroke-width", i === S.region ? 3 : 1); c.setAttribute("class", "dot");
+      c.addEventListener("click", () => show(i)); svg.append(c); dots.push(c);
+      const t = document.createElementNS(NS, "text"); t.setAttribute("x", MX(R.lon)); t.setAttribute("y", MY(R.lat) + 3); t.setAttribute("text-anchor", "middle");
+      t.setAttribute("font-size", "9"); t.setAttribute("font-weight", "800"); t.setAttribute("pointer-events", "none"); t.textContent = String(i + 1); svg.append(t);
+    });
+    wrap.append(svg); el.append(wrap, info, go); show(S.region);
+    const cl = mk("button", "choice", "Stay here"); cl.onclick = close; el.append(cl);
+  });
+}
+
+/* ---------------- Politics ---------------- */
+function shares(i) { const r = S.race, me = r.support[i], a = r.r1[i], b = r.r2[i]; return me / (me + a + b); }
+function mpShare() { const r = S.race, t = r.support + r.rivals[0] + r.rivals[1]; return r.support / t; }
+function partyMenu() {
+  if (!S.party) {
+    return ask("Party office", "Join a party before you can run for office. Independents can run too.", [
+      { label: "Join the Black Star Union · ₵100", need: 100, after: partyMenu, fn() { S.cash -= 100; S.party = PARTIES[0]; S.rep += 2; return "You joined the Black Star Union."; } },
+      { label: "Join the People's Progress Front · ₵100", need: 100, after: partyMenu, fn() { S.cash -= 100; S.party = PARTIES[1]; S.rep += 2; return "You joined the People's Progress Front."; } },
+      { label: "Stay independent", after: partyMenu, fn() { S.party = "Independent"; return "You will run as an independent."; } },
+      { label: "Leave" }]);
+  }
+  const ch = [], r = S.race, here = S.region;
+  ch.push({ label: "Volunteer for the party · reputation +3", lock: S.energy < 15 ? "too tired" : "", time: true, fn() { S.rep += 3; S.energy -= 15; S.hunger += 10; return "You spent the day on party volunteer work."; } });
+  let body = "Party: " + S.party + ". Reputation " + Math.round(S.rep) + "." + (!S.race && S.role === "citizen" ? " To run for MP you need reputation 15 and ₵2,000. Raise reputation by volunteering here, going to church, hosting parties and attending events." : "") + (!S.race && S.role === "mp" ? " To run for president you need reputation 40 and ₵10,000." : "");
+  if (!r) {
+    if (S.role === "citizen") ch.push({ label: "File to run for MP in " + REGIONS[here].n + " · ₵2,000", need: 2000, lock: S.rep < 15 ? "need reputation 15" : "",
+      fn() { S.cash -= 2000; S.race = { type: "mp", region: here, electionDay: S.day + 14, support: 10 + Math.round(S.rep / 3), rivals: [rnd(28, 40), rnd(24, 38)], names: [rname(), rname()] };
+        return "You filed for MP in " + REGIONS[here].n + ". The election is on day " + S.race.electionDay + "."; } });
+    if (S.role === "mp") ch.push({ label: "Run for president · ₵10,000", need: 10000, lock: S.rep < 40 ? "need reputation 40" : "",
+      fn() { S.cash -= 10000; S.race = { type: "president", electionDay: S.day + 35, names: [rname(), rname()],
+          support: REGIONS.map((_, i) => 8 + Math.round(S.rep / 10) + (i === here ? 10 : 0)), r1: REGIONS.map(() => rnd(22, 40)), r2: REGIONS.map(() => rnd(22, 40)) };
+        return "You are running for president. The election is on day " + S.race.electionDay + "."; } });
+    if (S.role === "president") { body += " You are the President of Ghana."; ch.push({ label: "Sign the law of the week", after: lawPickSheet }); }
+  } else if (r.type === "mp") {
+    const sh = mpShare(); body += " MP race in " + REGIONS[r.region].n + ", election on day " + r.electionDay + ". Polls: you " + Math.round(sh * 100) + "%.";
+    const wrong = S.region !== r.region ? "be in " + REGIONS[r.region].n : "", add = v => { r.support += v; };
+    ch.push({ label: "Door to door · free, support +2 to 4", lock: wrong || (S.energy < 25 ? "too tired" : ""), time: true, fn() { const v = rnd(2, 4); add(v); S.energy -= 25; S.hunger += 20; return "You knocked on doors all day. Support +" + v + "."; } });
+    ch.push({ label: "Hold a rally · ₵500, support +4 to 7", need: 500, lock: wrong || (S.energy < 20 ? "too tired" : ""), time: true, fn() { const v = rnd(4, 7); S.cash -= 500; add(v); S.rep += 1; S.energy -= 20; S.hunger += 15; return "The rally was loud. Support +" + v + "."; } });
+    ch.push({ label: "Run radio ads · ₵1,200, support +8 to 12", need: 1200, lock: wrong, time: true, fn() { const v = rnd(8, 12); S.cash -= 1200; add(v); S.hunger += 5; return "Your radio ads aired all day. Support +" + v + "."; } });
+    ch.push({ label: "Billboard blitz · ₵2,500, support +12 to 18", need: 2500, lock: wrong, time: true, fn() { const v = rnd(12, 18); S.cash -= 2500; add(v); S.hunger += 5; return "Your face is on every road. Support +" + v + "."; } });
+  } else {
+    const i = S.region, R = REGIONS[i]; body += " Presidential race, election on day " + r.electionDay + ". Be in a region to campaign there.";
+    ch.push({ label: "Check polls in all 16 regions", after: pollSheet });
+    ch.push({ label: "Door to door in " + R.n + " · free, +2 to 4", lock: S.energy < 25 ? "too tired" : "", time: true, fn() { const v = rnd(2, 4); r.support[i] += v; S.energy -= 25; S.hunger += 20; return "You walked " + R.cap + " door to door. Support +" + v + "."; } });
+    ch.push({ label: "Radio ads in " + R.n + " · ₵600, +5 to 8", need: 600, time: true, fn() { const v = rnd(5, 8); S.cash -= 600; r.support[i] += v; return "Your ads aired across " + R.n + ". Support +" + v + "."; } });
+    ch.push({ label: "Big rally in " + R.cap + " · ₵1,500, +10 to 15", need: 1500, lock: S.energy < 25 ? "too tired" : "", time: true, fn() { const v = rnd(10, 15); S.cash -= 1500; r.support[i] += v; S.rep += 1; S.energy -= 25; S.hunger += 15; return "A huge crowd turned up in " + R.cap + ". Support +" + v + "."; } });
+    ch.push({ label: "National TV ad · ₵6,000, +3 to 5 everywhere", need: 6000, time: true, fn() { const v = rnd(3, 5); S.cash -= 6000; r.support = r.support.map(x => x + v); return "Your ad ran on every channel. Support +" + v + " in all regions."; } });
+  }
+  ch.push({ label: "Leave" });
+  ask("Party office", body, ch);
+}
+function pollSheet() {
+  infoSheet("Presidential polls", el => {
+    el.append(mk("p", "small", "Your share of the three-way vote in each region. Green means you lead."));
+    REGIONS.forEach((R, i) => {
+      const r = S.race, me = r.support[i], lead = me > r.r1[i] && me > r.r2[i], pct = Math.round(shares(i) * 100);
+      const d = mk("div", "res" + (lead ? " lead" : " you")); const bar = mk("div", "b"), ii = document.createElement("i"); ii.style.width = pct + "%"; bar.append(ii);
+      d.append(mk("span", "nm", R.n), bar, mk("span", "pc", pct + "%")); el.append(d);
+    });
+  });
+}
+function drift() {
+  const r = S.race;
+  if (r.type === "mp") { r.rivals[0] += rnd(0, 2); r.rivals[1] += rnd(0, 2); }
+  else { [r.r1, r.r2].forEach(a => { for (let k = 0; k < 3; k++) a[rnd(0, 15)] += rnd(1, 3); }); }
+}
+function resolveElection() {
+  const r = S.race, nz = () => 0.92 + Math.random() * 0.16;
+  if (r.type === "mp") {
+    const sc = [r.support * nz(), r.rivals[0] * nz(), r.rivals[1] * nz()], t = sc[0] + sc[1] + sc[2];
+    const pc = sc.map(v => Math.round(v / t * 100)), won = sc[0] > sc[1] && sc[0] > sc[2], R = REGIONS[r.region];
+    S.race = null;
+    if (won) { S.role = "mp"; S.rep = clamp(S.rep + 25); say("You won the " + R.n + " seat. You are now an MP."); } else { S.rep = clamp(S.rep - 5); say("You lost the MP race in " + R.n + "."); }
+    return resultSheet(won ? "You are the new MP" : "You lost the election",
+      won ? "Voters in " + R.n + " Region chose you. You now earn ₵1,500 a week and can run for president." : "The seat went to someone else. Build more reputation and try again.",
+      [{ label: S.name, pct: pc[0], you: true }, { label: r.names[0], pct: pc[1] }, { label: r.names[1], pct: pc[2] }]);
+  }
+  let me = 0, a = 0, b = 0, led = 0; const reg = [];
+  REGIONS.forEach((R, i) => {
+    const x = r.support[i] * nz(), y = r.r1[i] * nz(), z = r.r2[i] * nz(), t = x + y + z, w = R.pop / POPSUM;
+    me += x / t * w; a += y / t * w; b += z / t * w; if (x > y && x > z) led++; reg.push([x, y, z]);
+  });
+  const rows = [{ label: S.name, pct: Math.round(me * 100), you: true }, { label: r.names[0], pct: Math.round(a * 100) }, { label: r.names[1], pct: Math.round(b * 100) }];
+  let won = me > 0.5, extra = "You led in " + led + " of 16 regions.", rows2 = null;
+  if (!won) {
+    const topA = a >= b, tot = reg.reduce((s, q, i) => s + REGIONS[i].pop / POPSUM * (q[0] / (q[0] + (topA ? q[1] : q[2]))), 0);
+    won = tot > 0.5; const p = Math.round(tot * 100);
+    rows2 = [{ label: S.name, pct: p, you: true }, { label: topA ? r.names[0] : r.names[1], pct: 100 - p }];
+    extra += " Nobody passed 50%, so there was a runoff.";
+  }
+  S.race = null;
+  if (won) { S.role = "president"; S.rep = clamp(S.rep + 30); say("You are the President of Ghana."); } else { S.rep = clamp(S.rep - 8); say("You lost the presidential election."); }
+  resultSheet("First round", "National vote across all 16 regions, weighted by population.", rows, extra);
+  if (rows2) resultSheet("Runoff", won ? "You won the runoff." : "You lost the runoff.", rows2);
+  showSheet((el, close) => {
+    el.append(mk("h2", "", won ? "President " + S.name : "Not this time"),
+      mk("p", "", won ? "You are the President of Ghana. You now earn ₵8,000 a week. Keep playing as long as you like." : "The presidency slipped away. Rebuild your cash and your reputation, then run again."));
+    const bt = mk("button", "choice gold", won ? "Keep playing" : "Try again later"); bt.onclick = close; el.append(bt);
+  });
+}
+
+/* ---------------- Payments and ads ---------------- */
+let ADS = [];
+const bannerCache = {};
+function getBanner(src) {
+  if (!src) return null; let im = bannerCache[src];
+  if (!im) { im = new Image(); im.src = src; bannerCache[src] = im; }
+  return im.complete && im.naturalWidth ? im : null;
+}
+function cleanAd(a) {
+  let bn = String(a.banner || "");
+  if (bn.startsWith("/banner/")) bn = CONFIG.BACKEND_URL + bn; else if (!/^data:image\/(jpeg|png);base64,/.test(bn) && !/^https?:\/\//.test(bn)) bn = "";
+  return { id: String(a.id || ""), biz: String(a.biz || "").slice(0, 28), slogan: String(a.slogan || "").slice(0, 60), color: /^#[0-9a-fA-F]{6}$/.test(a.color) ? a.color : "#2f6fd0",
+    slot: clamp(Number(a.slot) | 0, 0, CONFIG.AD_SLOTS - 1), status: a.status === "live" ? "live" : "pending", expires: Number(a.expires) || 0, banner: bn.slice(0, 400000) };
+}
+function loadAds() {
+  try { ADS = (JSON.parse(localStorage.getItem(ADS_KEY) || "[]") || []).map(cleanAd); } catch (e) { ADS = []; }
+  if (CONFIG.BACKEND_URL) fetch(CONFIG.BACKEND_URL + "/ads").then(r => r.json()).then(a => { if (Array.isArray(a)) ADS = a.map(x => ({ ...cleanAd(x), status: "live" })); }).catch(() => {});
+}
+function saveAds() { try { localStorage.setItem(ADS_KEY, JSON.stringify(ADS.filter(a => String(a.id).startsWith("demo")))); } catch (e) {} }
+function adForSlot(slot) { const n = Date.now(); return ADS.find(a => a.slot === slot && a.status === "live" && a.expires > n) || null; }
+async function getSlots() {
+  if (CONFIG.BACKEND_URL) { try { const r = await fetch(CONFIG.BACKEND_URL + "/slots").then(x => x.json()); if (Array.isArray(r.slots)) return r.slots; } catch (e) {} }
+  const n = Date.now();
+  return Array.from({ length: CONFIG.AD_SLOTS }, (_, i) => { const a = ADS.find(x => x.slot === i && (x.status === "pending" || (x.status === "live" && x.expires > n))); return { slot: i, free: !a, biz: a ? a.biz : "", until: a ? a.expires : 0 }; });
+}
+const paymentsConfigured = () => !!(CONFIG.PAYSTACK_PUBLIC_KEY && CONFIG.BACKEND_URL);
+const demoOk = () => !!CONFIG.ALLOW_DEMO_PAYMENTS && !CONFIG.PAYSTACK_PUBLIC_KEY;
+function loadScript(src) { return new Promise((res, rej) => { if (window.PaystackPop) return res(); const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s); }); }
+function checkout(o) {
+  if (!paymentsConfigured()) {
+    return showSheet((el, close) => {
+      if (demoOk()) {
+        el.append(mk("h2", "", "Demo mode"), mk("p", "", "Real payments are not connected, so no money will be charged."));
+        const b = mk("button", "choice gold", "Simulate paying " + ghs(o.amount)); b.onclick = () => { close(); o.onDone({ ok: true, demo: true }); }; el.append(b);
+      } else el.append(mk("h2", "", "Payments are being set up"), mk("p", "", "We cannot take payments just yet. Please try again soon."));
+      const c = mk("button", "choice", "Close"); c.onclick = close; el.append(c);
+    });
+  }
+  loadScript("https://js.paystack.co/v1/inline.js").then(() => {
+    const ref = "GL" + Date.now() + Math.random().toString(36).slice(2, 8);
+    const h = window.PaystackPop.setup({ key: CONFIG.PAYSTACK_PUBLIC_KEY, email: o.email, amount: Math.round(o.amount * 100), currency: "GHS", ref, metadata: { kind: o.kind, payload: o.payload },
+      callback: res => {
+        fetch(CONFIG.BACKEND_URL + "/verify", { method: "POST", headers: authHeaders(), body: JSON.stringify({ reference: res.reference, kind: o.kind, payload: o.payload }) })
+          .then(r => r.json()).then(j => { if (j && j.ok) o.onDone(j); else { say((j && j.error) || "We could not confirm that payment. If you were charged, contact support with reference " + res.reference + "."); render(); } })
+          .catch(() => { say("We could not reach the payment server. Contact support with reference " + res.reference + "."); render(); });
+      },
+      onClose: () => { say("Payment window closed."); render(); } });
+    h.openIframe();
+  }).catch(() => { say("Could not load the payment window. Check your connection."); render(); });
+}
+function shopSheet() {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Buy game cedis"), mk("p", "", "Pay with Mobile Money or card. Cedis go straight into your wallet."));
+    const live = paymentsConfigured(), blocked = !live && !demoOk();
+    if (!live && demoOk()) el.append(mk("div", "notice", "Demo mode: no real money is charged."));
+    if (blocked) el.append(mk("div", "notice", "Payments are being set up. Please try again soon."));
+    if (live && !AUTH) el.append(mk("div", "notice", "Log in from the title screen to buy cedis, so every purchase is saved to your account."));
+    const email = mk("input", "txt"); email.type = "email"; email.placeholder = "Email for your receipt";
+    if (live) el.append(mk("span", "field-label", "Email"), email);
+    const box = mk("div", "bundles");
+    BUNDLES.forEach(b => {
+      const btn = mk("button", "bundle"); const l = mk("div"); l.append(document.createTextNode(b.name), mk("span", "", fmt(b.cedis) + " game cedis"));
+      btn.append(l, mk("em", "", "Pay " + ghs(b.ghs))); if (blocked || (live && !AUTH)) btn.disabled = true;
+      btn.onclick = () => {
+        if (live && !/^\S+@\S+\.\S+$/.test(email.value)) { email.focus(); email.style.borderColor = "#CE1126"; return; }
+        const em = email.value; close();
+        checkout({ amount: b.ghs, email: em, kind: "bundle", payload: { id: b.id }, onDone: r => { const c = r.demo ? b.cedis : Number(r.cedis) || 0; S.cash += c; addInc("purchase", c); say("Payment received. " + fmt(c) + " added to your wallet."); render(); save(); } });
+      };
+      box.append(btn);
+    });
+    el.append(box, mk("p", "small", "Game cedis have no cash value, cannot be withdrawn, and purchases are non-refundable."));
+    const c = mk("button", "choice", "Close"); c.onclick = close; el.append(c);
+  });
+}
+const lum = h => { const n = parseInt(h.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
+function adPreview(ad) {
+  const box = mk("div"); box.style.cssText = "border-radius:14px;overflow:hidden;margin:8px 0;background:" + ad.color + ";color:" + (lum(ad.color) > 150 ? "#000" : "#fff");
+  if (ad.banner) { const im = document.createElement("img"); im.src = ad.banner; im.alt = ad.biz; im.style.cssText = "display:block;width:100%"; box.append(im); }
+  const t = mk("div"); t.style.padding = "8px 12px"; t.append(mk("b", "", ad.biz), document.createElement("br"), document.createTextNode(ad.slogan)); box.append(t); return box;
+}
+function billboardSheet(b) {
+  const slot = b ? b.slot : 0;
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Billboard #" + (slot + 1)));
+    const body = mk("div"); el.append(body); body.append(mk("p", "small", "Checking this billboard..."));
+    const cl = mk("button", "choice", "Close"); cl.onclick = close; el.append(cl);
+    getSlots().then(sl => {
+      body.textContent = ""; const st = sl[slot] || { free: true }, ad = adForSlot(slot);
+      if (ad) { body.append(adPreview(ad), mk("p", "small", "Running until " + new Date(ad.expires).toLocaleDateString() + ". Every player in every city sees this ad.")); }
+      if (st.free) {
+        body.append(mk("p", "", "This billboard is free. Advertisers pay " + ghs(CONFIG.AD_PRICE_PER_DAY) + " a day and every player in every city sees the ad."));
+        const bk = mk("button", "choice gold", "Book this billboard"); bk.onclick = () => { close(); adForm(slot); }; body.append(bk);
+      } else {
+        if (!ad) body.append(mk("p", "", "This billboard is reserved for an advertiser whose ad is waiting for approval."));
+        const bk = mk("button", "choice gold", "Book a different billboard"); bk.onclick = () => { close(); adForm(); }; body.append(bk);
+      }
+    });
+  });
+}
+function processBanner(file) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => { const im = new Image(); im.onload = () => {
+      const c = document.createElement("canvas"); c.width = 480; c.height = 240; const x = c.getContext("2d"), r = Math.max(480 / im.width, 240 / im.height), w = im.width * r, h = im.height * r;
+      x.fillStyle = "#fff"; x.fillRect(0, 0, 480, 240); x.drawImage(im, (480 - w) / 2, (240 - h) / 2, w, h);
+      let q = 0.8, d = c.toDataURL("image/jpeg", q); while (d.length > 150000 && q > 0.3) { q -= 0.1; d = c.toDataURL("image/jpeg", q); } res(d); };
+      im.onerror = rej; im.src = fr.result; };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+function adForm(slot0) {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Advertise on a billboard"), mk("p", "", ghs(CONFIG.AD_PRICE_PER_DAY) + " per day per billboard, real money. There are " + CONFIG.AD_SLOTS + " billboards. Your ad shows on your billboard in every city, to every player."));
+    if (!paymentsConfigured()) el.append(mk("div", "notice", demoOk() ? "Demo mode: your ad goes live on this device and nothing is charged." : "Payments are being set up. You can design your ad now."));
+    const slotSel = mk("select", "txt"), biz = mk("input", "txt"), slo = mk("input", "txt"), mail = mk("input", "txt"), file = mk("input"), msg = mk("p", "small", "");
+    biz.maxLength = 28; biz.placeholder = "Business name"; slo.maxLength = 60; slo.placeholder = "Short slogan"; mail.type = "email"; mail.placeholder = "Email for your receipt";
+    file.type = "file"; file.accept = "image/*"; file.style.marginBottom = "8px";
+    const pv = mk("canvas"); pv.width = 240; pv.height = 120; pv.style.cssText = "display:none;width:100%;max-width:300px;border-radius:12px;margin-bottom:8px";
+    let bannerData = "", color = "#2f6fd0", days = 1;
+    slotSel.append(new Option("Loading billboards...", ""));
+    getSlots().then(sl => { slotSel.textContent = ""; const free = sl.filter(s => s.free); if (!free.length) slotSel.append(new Option("All billboards are booked right now", "")); free.forEach(s => slotSel.append(new Option("Billboard #" + (s.slot + 1), String(s.slot)))); if (slot0 != null && free.some(s => s.slot === slot0)) slotSel.value = String(slot0); else if (free.length) slotSel.value = String(free[0].slot); });
+    el.append(mk("span", "field-label", "Which billboard"), slotSel, mk("span", "field-label", "Business name"), biz, mk("span", "field-label", "Slogan"), slo);
+    if (paymentsConfigured()) el.append(mk("span", "field-label", "Email"), mail);
+    el.append(mk("span", "field-label", "Upload your banner (optional)"), file, pv, mk("span", "field-label", "Billboard colour (used behind your text)"));
+    file.onchange = () => { if (!file.files[0]) return; processBanner(file.files[0]).then(d => { bannerData = d; const im = new Image(); im.onload = () => { pv.getContext("2d").drawImage(im, 0, 0, 240, 120); pv.style.display = "block"; }; im.src = d; msg.textContent = ""; }).catch(() => { msg.textContent = "Could not read that image."; }); };
+    const sw = mk("div", "swatches"); el.append(sw);
+    ["#2f6fd0", "#CE1126", "#006B3F", "#FCD116", "#ffffff", "#7b2d8e"].forEach(c => { const b = mk("button", "sw" + (c === color ? " on" : "")); b.style.background = c; b.setAttribute("aria-label", "Colour " + c); b.onclick = () => { color = c; [...sw.children].forEach(x => x.classList.remove("on")); b.classList.add("on"); }; sw.append(b); });
+    el.append(mk("span", "field-label", "Days to run"));
+    const st = mk("div", "stepper"), minus = mk("button", "", "−"), val = mk("b", "", "1 day"), plus = mk("button", "", "+"); st.append(minus, val, plus); el.append(st, msg);
+    const pay = mk("button", "choice gold"); pay.style.marginTop = "14px";
+    const upd = () => { val.textContent = days + (days > 1 ? " days" : " day"); pay.textContent = "Pay " + ghs(days * CONFIG.AD_PRICE_PER_DAY) + " and book"; };
+    minus.onclick = () => { days = Math.max(1, days - 1); upd(); }; plus.onclick = () => { days = Math.min(CONFIG.MAX_AD_DAYS, days + 1); upd(); }; upd();
+    pay.onclick = async () => {
+      const name = biz.value.trim(), slogan = slo.value.trim();
+      if (slotSel.value === "") { msg.textContent = "Pick a free billboard first."; return; }
+      if (!name || !slogan) { msg.textContent = "Add a business name and a slogan."; return; }
+      if (paymentsConfigured() && !/^\S+@\S+\.\S+$/.test(mail.value)) { msg.textContent = "Add your email for the receipt."; mail.focus(); return; }
+      const slot = +slotSel.value; let banner = bannerData;
+      if (paymentsConfigured() && bannerData) { msg.textContent = "Uploading your banner..."; try { const r = await api("/banners", { method: "POST", body: { data: bannerData } }); banner = r.id; } catch (e) { msg.textContent = "Could not upload the banner: " + e.message; return; } }
+      const payload = { biz: name, slogan, color, days, slot, banner }, em = mail.value; close();
+      checkout({ amount: days * CONFIG.AD_PRICE_PER_DAY, email: em, kind: "ad", payload, onDone: r => {
+        if (r.demo) { ADS = ADS.filter(a => a.slot !== slot); ADS.push(cleanAd({ id: "demo" + Date.now(), ...payload, banner: bannerData, status: "live", expires: Date.now() + days * 864e5 })); ADS[ADS.length - 1].status = "live"; saveAds(); if (S) say("Your demo ad is live on billboard #" + (slot + 1) + "."); }
+        else if (S) say("Payment received. Your ad goes live after a quick review.");
+        if (S) render();
+        infoSheet("Thank you", e => e.append(mk("p", "", r.demo ? "Your demo ad is now on billboard #" + (slot + 1) + "." : "We received your payment. Your ad goes live on billboard #" + (slot + 1) + " after a quick review."))); } });
+    };
+    const c = mk("button", "choice", "Cancel"); c.onclick = close; el.append(pay, c);
+  });
+}
+
+/* ---------------- HUD ---------------- */
+const LAWS = [
+  { id: "food", icon: "🍲", t: "Food subsidy is law this week", d: "Chop bar prices are 30% cheaper." },
+  { id: "fuel", icon: "⛽", t: "Fuel subsidy is law this week", d: "Taxi and lorry fares are 30% cheaper." },
+  { id: "rent", icon: "🏠", t: "Rent relief is law this week", d: "Rent and home bills are halved." },
+  { id: "market", icon: "📈", t: "Market boom this week", d: "All job pay is 10% higher." }
+];
+const lawOn = id => !!S && S.law === id;
+let prevCash = 0;
+function homesForSale() { ensureCity(); return CITY.buildings.filter(b => ["house", "apartment", "guesthouse"].includes(b.kind) && !S.props[b.key]).length; }
+function render() {
+  if (!S || S.demo) return;
+  const R = REGIONS[S.region], law = LAWS.find(l => l.id === S.law) || LAWS[0];
+  const dir = S.cash > prevCash ? "up" : S.cash < prevCash ? "down" : ""; prevCash = S.cash;
+  const role = S.role === "mp" ? "MP" : S.role === "president" ? "President" : "Citizen";
+  const race = S.fbi ? "FBI invite: visit by day " + S.fbi.dueDay : S.race ? (S.race.type === "mp" ? "MP race, day " + S.race.electionDay : "Presidential race, day " + S.race.electionDay) : role;
+  $("cashPill").textContent = fmt(S.cash); $("cashPill").className = "cashpill " + dir;
+  const m = (ic, v, c) => `<div class="mini-m"><span>${ic}</span><div class="bar"><i style="width:${v}%;background:${c}"></i></div></div>`;
+  $("hud").innerHTML = `<div class="chips"><span class="chip2">${DAYN[wd()]} ${S.day}, ${SLOTS[S.slot]}</span><span class="chip2">📍 ${esc(R.cap)}</span><button class="chip2" data-act="gov">🏛️ Government</button><button class="chip2" data-act="plots">🌴 Plots</button><button class="chip2" data-act="homes">🏠 ${homesForSale()} homes</button></div>
+    <button class="banner" data-act="law">${law.icon} ${esc(law.t)}</button>
+    <div class="statpill">${m("⚡", S.energy, "#4caf75")}${m("🍽️", S.hunger, S.hunger >= 70 ? "#e5534b" : "#e0a82e")}${m("⭐", S.rep, "#f0b400")}<span class="role">${esc(race)}</span></div>`;
+  $("log").textContent = S.log[0] || ""; $("log").hidden = !S.log[0];
+}
+function govSheet() {
+  const law = LAWS.find(l => l.id === S.law) || LAWS[0];
+  infoSheet("Government", el => {
+    const kv = mk("div", "kv");
+    [["President", S.role === "president" ? S.name + " (you)" : "Vacant"], ["Your role", S.role === "mp" ? "Member of Parliament" : S.role === "president" ? "President" : "Citizen"], ["Party", S.party || "None"], ["Law this week", law.t]].forEach(r => kv.append(mk("span", "", r[0]), mk("b", "", r[1])));
+    el.append(kv, mk("p", "small", "Join a party at a Party office, build reputation, then run for MP. MPs can run for president, and the president signs a new law every week."));
+  });
+}
+function lawSheet() {
+  const law = LAWS.find(l => l.id === S.law) || LAWS[0];
+  ask(law.icon + " " + law.t, law.d + (S.role === "president" ? " As president you can sign a different law." : " A new law is chosen every Monday."),
+    S.role === "president" ? [{ label: "Sign a new law", after: lawPickSheet }, { label: "Close" }] : [{ label: "OK" }]);
+}
+function lawPickSheet() {
+  ask("Sign a law", "Pick the law for this week.", [...LAWS.map(l => ({ label: l.icon + " " + l.t + ". " + l.d, fn() { S.law = l.id; return "You signed: " + l.t + "."; } })), { label: "Cancel" }]);
+}
+function logSheet() { infoSheet("Recent events", el => { S.log.slice(0, 15).forEach(l => el.append(mk("div", "info", l))); }); }
+$("hud").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b || !S || S.busy || S.demo) return;
+  ({ gov: govSheet, law: lawSheet, plots: () => forSaleSheet(x => x.kind === "plot"), homes: () => forSaleSheet(x => ["house", "apartment", "guesthouse"].includes(x.kind)) })[b.dataset.act]();
+});
+$("log").addEventListener("click", () => { if (S && !S.busy && !S.demo) logSheet(); });
+
+/* ---------------- Characters ---------------- */
+function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+function drawPerson(c, x, y, L, dir, step, moving, s) {
+  s = s || 1; c.save(); c.translate(x, y); c.scale(s, s);
+  const skin = SKINS[L.skin], out = OUTFITS[L.outfit], f = L.gender === 1, bob = moving ? Math.sin(step * 0.35) * 1.4 : 0, sw = moving ? Math.sin(step * 0.35) * 3 : 0;
+  c.fillStyle = "rgba(0,0,0,.28)"; c.beginPath(); c.ellipse(0, 0, 10, 4, 0, 0, 7); c.fill();
+  if (f && L.hair === 0) { c.fillStyle = "#141414"; rr(c, -9, -39 + bob, 18, 21, 6); c.fill(); }
+  if (f) { c.fillStyle = skin; c.fillRect(-5, -9, 4, 9 - Math.max(0, sw)); c.fillRect(1, -9, 4, 9 - Math.max(0, -sw)); }
+  else { c.fillStyle = "#232323"; c.fillRect(-6, -12, 5, 12 - Math.max(0, sw)); c.fillRect(1, -12, 5, 12 - Math.max(0, -sw)); }
+  c.fillStyle = out;
+  if (f) { c.beginPath(); c.moveTo(-6, -27 + bob); c.lineTo(6, -27 + bob); c.lineTo(11, -9); c.lineTo(-11, -9); c.closePath(); c.fill(); c.fillStyle = "rgba(255,255,255,.35)"; c.fillRect(-6, -19 + bob, 12, 2); }
+  else rr(c, -8, -27 + bob, 16, 17, 4), c.fill();
+  c.fillStyle = skin; if (f) { c.fillRect(-10, -25 + bob, 3, 10); c.fillRect(7, -25 + bob, 3, 10); } else { c.fillRect(-11, -25 + bob, 3, 11); c.fillRect(8, -25 + bob, 3, 11); }
+  c.beginPath(); c.arc(0, -32 + bob, 7.5, 0, 7); c.fill();
+  c.fillStyle = "#141414";
+  if (f) {
+    if (L.hair === 0) { c.beginPath(); c.arc(0, -33 + bob, 7.9, Math.PI, 0); c.fill(); }
+    else if (L.hair === 1) { c.beginPath(); c.arc(0, -33 + bob, 7.9, Math.PI, 0); c.fill(); c.beginPath(); c.arc(-8, -38 + bob, 4, 0, 7); c.arc(8, -38 + bob, 4, 0, 7); c.arc(0, -42 + bob, 4.5, 0, 7); c.fill(); }
+    else { c.fillStyle = L.outfit === 1 ? "#CE1126" : "#FCD116"; c.fillRect(-8, -40 + bob, 16, 6); c.fillStyle = "#006B3F"; c.fillRect(-8, -37 + bob, 16, 2); c.beginPath(); c.arc(7, -41 + bob, 4, 0, 7); c.fillStyle = "#CE1126"; c.fill(); }
+  } else {
+    if (L.hair === 0) { c.beginPath(); c.arc(0, -33 + bob, 7.8, Math.PI, 0); c.fill(); }
+    else if (L.hair === 1) { for (let i = 0; i < 7; i++) { const a = Math.PI + i / 6 * Math.PI; c.beginPath(); c.arc(Math.cos(a) * 8, -33 + bob + Math.sin(a) * 8, 2.6, 0, 7); c.fill(); } }
+    else { c.fillStyle = OUTFITS[(L.outfit + 3) % 6]; c.beginPath(); c.arc(0, -34 + bob, 8, Math.PI, 0); c.fill(); c.fillRect(-8, -35 + bob, 16, 3); c.fillRect(dir === "left" ? -12 : 2, -34 + bob, 10, 2); }
+  }
+  c.fillStyle = "#111";
+  if (dir === "down") { c.fillRect(-4, -32 + bob, 2, 2); c.fillRect(2, -32 + bob, 2, 2); if (f) { c.fillStyle = "#b03a48"; c.fillRect(-1.5, -28 + bob, 3, 1.5); } }
+  else if (dir === "left") c.fillRect(-5, -32 + bob, 2, 2); else if (dir === "right") c.fillRect(3, -32 + bob, 2, 2);
+  c.restore();
+}
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------------- City generation ---------------- */
+const COLS = 10, ROWS = 7, BW = 300, BH = 240, RD = 60;
+const WW = RD + COLS * (BW + RD), WH = RD + ROWS * (BH + RD), WHH = WH + 90;
+let CITY = null;
+function shuffle(a, rng) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function genCity(ri) {
+  const R = REGIONS[ri], rng = mulberry(ri * 7919 + 101), f = 0.6 + R.pop / 17.7 * 1.4;
+  const blocks = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) blocks.push({ c, r, x: RD + c * (BW + RD), y: RD + r * (BH + RD), park: false });
+  shuffle(blocks.map((_, i) => i), rng).slice(0, 7).forEach(i => { blocks[i].park = true; });
+  const apc = blocks.filter(b => !b.park && b.c >= COLS - 3), ab = apc[Math.floor(rng() * apc.length)]; ab.airport = true;
+  const lots = [];
+  blocks.forEach(b => { if (b.park || b.airport) return; for (let j = 0; j < 2; j++) for (let i = 0; i < 3; i++) lots.push({ x: b.x + 11 + i * 100, y: b.y + 10 + j * 115, w: 88, h: 84 }); });
+  lots.forEach((l, i) => { l.i = i; });
+  const cx = WW / 2, cy = WH / 2;
+  lots.forEach(l => { l.k = Math.hypot(l.x - cx, (l.y - cy) * 1.4) + rng() * 220; });
+  const order = lots.slice().sort((a, b) => a.k - b.k);
+  const rp = (k, n) => Array(n).fill(k);
+  const core = [].concat(rp("work", 3), rp("market", 3), rp("training", 2), rp("chop", 7), rp("club", 5), rp("church", 8), rp("mosque", 3), rp("hospital", 3), rp("momo", 3), rp("station", 2), rp("party", 2), rp("mall", 2), rp("cardealer", 2), rp("hotel", 3), rp("realty", 2), rp("fbi", 2));
+  core.forEach((k, n) => { order[n].kind = k; });
+  const rest = order.slice(core.length), outer = rest.slice(Math.floor(rest.length * 0.6));
+  outer[Math.floor(rng() * outer.length)].kind = "home";
+  shuffle(rest.filter(l => !l.kind), rng).slice(0, CONFIG.AD_SLOTS).forEach((l, i) => { l.kind = "billboard"; l.slot = i; });
+  const bag = [...Array(38).fill("house"), ...Array(14).fill("apartment"), ...Array(18).fill("shop"), ...Array(18).fill("plot"), ...Array(6).fill("warehouse"), ...Array(6).fill("guesthouse")];
+  lots.forEach(l => { if (!l.kind) l.kind = bag[Math.floor(rng() * bag.length)]; });
+  const NAMES = { chop: ["Auntie Ama's Chop Bar", "Mama Put Corner", "Papa Kwesi Grill", "Waakye Junction", "Banku House", "Kenkey Palace", "Chop and Chill"], club: ["Neon Palace", "Zodiac Lounge", "Black Star Club", "Gold Coast Lounge", "Skyline Rooftop"], church: ["Grace Chapel", "Victory Temple", "Holy Trinity Church", "Living Waters", "St. Peter's", "Redeemed Assembly", "Faith Cathedral", "Mount Zion"], mosque: ["Central Mosque", "Unity Mosque", "Nima Mosque"], hospital: ["City Clinic", "Unity Hospital", "Hope Clinic"], hotel: ["Grand Hotel", "Palm View Hotel", "Star Suites"] };
+  const cn = {}, BODY = ["#d9b38c", "#c98b6b", "#a7b8a0", "#c9c2a0", "#b8a4c9", "#9fb8c9", "#d0a0a0"];
+  const buildings = lots.map(l => {
+    const k = l.kind, br = mulberry(ri * 100003 + l.i * 31 + 7); let name = (KINDS[k] || {}).l || "";
+    if (NAMES[k]) { cn[k] = cn[k] || 0; name = NAMES[k][cn[k]++ % NAMES[k].length]; }
+    else if (k === "market") name = R.cap + " Market";
+    else if (k === "billboard") name = "Billboard #" + (l.slot + 1);
+    else if (PROPS[k]) name = PROPS[k].n + " " + (l.i + 1);
+    const price = PROPS[k] ? Math.round(PROPS[k].base * f * (0.85 + br() * 0.3) / 100) * 100 : 0;
+    const coll = k === "billboard" ? { x: l.x + 36, y: l.y + 60, w: 16, h: 24 } : { x: l.x, y: l.y + 16, w: l.w, h: l.h - 16 };
+    return { key: ri + ":" + l.i, kind: k, name, x: l.x, y: l.y, w: l.w, h: l.h, lot: l.i, slot: l.slot, col: BODY[Math.floor(br() * BODY.length)], price, coll };
+  });
+  buildings.push({ key: ri + ":airport", kind: "airport", name: R.cap + " Airport", x: ab.x + 24, y: ab.y + 24, w: 150, h: 84, lot: 9000, col: "#aac0d4", price: 0, coll: { x: ab.x + 24, y: ab.y + 40, w: 150, h: 68 } });
+  const lamps = [], trees = [], benches = [];
+  for (let r = 0; r <= ROWS; r++) for (let x = 40; x < WW; x += 160) { lamps.push({ x, y: r * (BH + RD) + 10 }); lamps.push({ x: x + 80, y: r * (BH + RD) + 56 }); }
+  for (let c = 0; c <= COLS; c++) for (let y = 70; y < WH; y += 170) { lamps.push({ x: c * (BW + RD) + 10, y }); }
+  const kinds = { forest: ["tree"], coast: ["palm", "tree"], savanna: ["baobab", "acacia", "acacia"], lake: ["tree", "palm"] }[R.b];
+  blocks.forEach(b => {
+    if (b.park) { for (let i = 0; i < 14; i++) trees.push({ x: b.x + 14 + rng() * (BW - 28), y: b.y + 40 + rng() * (BH - 50), k: kinds[Math.floor(rng() * kinds.length)] });
+      benches.push({ x: b.x + 90, y: b.y + BH / 2 + 30 }, { x: b.x + 190, y: b.y + BH / 2 + 30 }); }
+    else if (!b.airport) { for (let i = 0; i < 3; i++) trees.push({ x: b.x + 20 + rng() * (BW - 40), y: b.y + 114 + (i === 2 ? 118 : 0), k: kinds[Math.floor(rng() * kinds.length)] }); }
+  });
+  const cars = [], colors = ["#CE1126", "#FCD116", "#1e5fbf", "#f2f2f2", "#222222", "#2e9e5b"];
+  for (let i = 0; i < 56; i++) { const h = i % 2 === 0; cars.push({ h, road: h ? rnd(0, ROWS) : rnd(0, COLS), dir: Math.random() < 0.5 ? 1 : -1, pos: Math.random() * (h ? WW : WH), sp: 0.8 + Math.random() * 1.2, col: colors[i % 6] }); }
+  const walkers = [];
+  for (let i = 0; i < 96; i++) { const h = i % 2 === 0; walkers.push({ h, road: h ? rnd(0, ROWS) : rnd(0, COLS), side: rnd(0, 1), pos: Math.random() * (h ? WW : WH), dir: Math.random() < 0.5 ? 1 : -1, sp: 0.3 + Math.random() * 0.3, step: Math.random() * 50, look: { skin: rnd(0, 5), outfit: rnd(0, 5), hair: rnd(0, 2), gender: rnd(0, 1) } }); }
+  return { ri, blocks, buildings, solids: buildings.map(b => b.coll), lamps, trees, benches, cars, walkers };
+}
+function ensureCity() { if (!CITY || CITY.ri !== S.region) CITY = genCity(S.region); }
+function placeAt(b) { INSIDE = null; player.x = b.x + b.w / 2; player.y = Math.min(WH + 20, b.y + b.h + 16); }
+function resetPlayer() { ensureCity(); const b = CITY.buildings.find(x => x.kind === (S.region === S.home.region ? "home" : "station")); placeAt(b); player.dir = "down"; }
+function taxiFare(b) { if (S.car) return 0; return Math.round((10 + Math.hypot(b.x - player.x, b.y - player.y) / 80) * (lawOn("fuel") ? 0.7 : 1)); }
+
+/* ---------------- Drawing the city (3D look) ---------------- */
+const cv = $("cv"), ctx = cv.getContext("2d"), mini = $("mini"), mctx = mini.getContext("2d");
+let W = 640, H = 416, DPR = 1, ZS = 1.1, CSSW = 640, CSSH = 416;
+const IW = 640, IH = 416, SY = 0.62;
+let player = { x: 200, y: 244, dir: "down", moving: false, step: 0 }, near = null, cam = { x: 0, y: 0 };
+function resize() {
+  DPR = Math.min(2, window.devicePixelRatio || 1); CSSW = window.innerWidth || 640; CSSH = window.innerHeight || 416;
+  cv.width = Math.round(CSSW * DPR); cv.height = Math.round(CSSH * DPR);
+  ZS = clamp(CSSW / 340, 1, 1.3); W = CSSW / ZS; H = CSSH / ZS;
+}
+window.addEventListener("resize", resize); resize();
+
+const shade = (hex, a) => { const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255; if (a >= 0) { r += (255 - r) * a; g += (255 - g) * a; b += (255 - b) * a; } else { r *= 1 + a; g *= 1 + a; b *= 1 + a; } return "rgb(" + (r | 0) + "," + (g | 0) + "," + (b | 0) + ")"; };
+function pill(c, txt, cx, y, bg, fg) { c.font = "bold 11px system-ui,sans-serif"; const tw = c.measureText(txt).width + 12; c.fillStyle = bg || "rgba(22,32,42,.78)"; rr(c, cx - tw / 2, y - 12, tw, 17, 8); c.fill(); c.fillStyle = fg || "#fff"; c.textAlign = "center"; c.fillText(txt, cx, y); }
+/* a 3D block: footprint top-left at (x,y) in screen space, depth d (already squashed), height hz. The top face is shifted left by sk to show the right side. */
+function box3(c, x, y, w, d, hz, col, sk, topCol) {
+  if (sk == null) sk = hz * 0.22;
+  c.fillStyle = col; c.beginPath(); c.moveTo(x, y + d); c.lineTo(x + w, y + d); c.lineTo(x + w - sk, y + d - hz); c.lineTo(x - sk, y + d - hz); c.closePath(); c.fill();
+  c.fillStyle = shade(col, -0.24); c.beginPath(); c.moveTo(x + w, y + d); c.lineTo(x + w, y); c.lineTo(x + w - sk, y - hz); c.lineTo(x + w - sk, y + d - hz); c.closePath(); c.fill();
+  c.fillStyle = topCol || shade(col, 0.2); c.beginPath(); c.moveTo(x - sk, y + d - hz); c.lineTo(x + w - sk, y + d - hz); c.lineTo(x + w - sk, y - hz); c.lineTo(x - sk, y - hz); c.closePath(); c.fill();
+}
+function winGrid(c, x, y, w, d, hz, sk, cols, lit) {
+  const rows = Math.floor((hz - 16) / 17);
+  for (let r = 0; r < rows; r++) { const z = 12 + r * 17; for (let i = 0; i < cols; i++) { const u = (i + 0.5) / cols; c.fillStyle = lit ? "#ffe28a" : "#cfe6f2"; c.fillRect(x + u * w - sk * (z + 6) / hz - 4, y + d - z - 10, 8, 9); } }
+  if (hz > 40) for (let r = 0; r < rows; r++) { const z = 12 + r * 17; c.fillStyle = lit ? "#e8c96a" : "#9fc0d4"; c.fillRect(x + w - sk * (z + 6) / hz - 3, y + d * 0.3 - z - 4, 6, 8); }
+}
+function doorAt3(c, x, y, w, d, sk) { c.fillStyle = "#3a2a1c"; c.fillRect(x + w / 2 - 7 - sk * 0.08, y + d - 18, 14, 18); }
+function wrapText(c, text, x, y, mw, lh, max) {
+  const words = text.split(" "); let line = "", n = 0;
+  for (const w of words) { const t = line ? line + " " + w : w; if (c.measureText(t).width > mw && line) { c.fillText(line, x, y + n * lh); n++; line = w; if (n >= max) return; } else line = t; }
+  if (n < max) c.fillText(line, x, y + n * lh);
+}
+function drawTree(c, d, t) {
+  const { x, y, k } = d;
+  c.fillStyle = "rgba(0,0,0,.14)"; c.beginPath(); c.ellipse(x, y + 1, 13, 5, 0, 0, 7); c.fill();
+  if (k === "palm") { c.strokeStyle = "#8a6a3c"; c.lineWidth = 4; c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + 5, y - 20, x + 2, y - 38); c.stroke(); c.strokeStyle = "#3f9d4a"; c.lineWidth = 3;
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + Math.sin(t / 900 + x) * 0.05; c.beginPath(); c.moveTo(x + 2, y - 38); c.quadraticCurveTo(x + 2 + Math.cos(a) * 10, y - 46 + Math.sin(a) * 4, x + 2 + Math.cos(a) * 18, y - 38 + Math.sin(a) * 9); c.stroke(); } }
+  else if (k === "baobab") { c.fillStyle = "#9a8260"; rr(c, x - 9, y - 28, 18, 28, 6); c.fill(); c.strokeStyle = "#9a8260"; c.lineWidth = 3; c.beginPath(); c.moveTo(x - 4, y - 28); c.lineTo(x - 14, y - 40); c.moveTo(x + 4, y - 28); c.lineTo(x + 15, y - 40); c.stroke(); c.fillStyle = "#79a855"; [[-15, -42], [15, -42], [0, -46]].forEach(p => { c.beginPath(); c.arc(x + p[0], y + p[1], 7, 0, 7); c.fill(); }); }
+  else if (k === "acacia") { c.fillStyle = "#7a5a32"; c.fillRect(x - 2, y - 24, 4, 24); c.fillStyle = "#74a24a"; c.beginPath(); c.ellipse(x, y - 26, 20, 7, 0, 0, 7); c.fill(); }
+  else { c.fillStyle = "#6a4a2a"; c.fillRect(x - 3, y - 14, 6, 14); c.fillStyle = "#3f8f4a"; c.beginPath(); for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; c.lineTo(x + Math.cos(a) * 15, y - 26 + Math.sin(a) * 14); } c.closePath(); c.fill(); c.fillStyle = "#5bb062"; c.beginPath(); c.arc(x - 4, y - 30, 8, 0, 7); c.fill(); }
+}
+function carXY(k) { return k.h ? [k.pos, k.road * (BH + RD) + (k.dir > 0 ? 38 : 22)] : [k.road * (BW + RD) + (k.dir > 0 ? 38 : 22), k.pos]; }
+function walkerXY(w) { return w.h ? [w.pos, w.road * (BH + RD) + (w.side ? 56 : 4)] : [w.road * (BW + RD) + (w.side ? 56 : 4), w.pos]; }
+function drawCar(c, k) {
+  const [wx, wy] = carXY(k), x = wx - cam.x, y = (wy - cam.y) * SY;
+  c.fillStyle = "rgba(0,0,0,.2)"; c.beginPath(); c.ellipse(x, y + 3, 19, 6, 0, 0, 7); c.fill();
+  if (k.h) { box3(c, x - 17, y - 4, 34, 8, 8, k.col, 3); box3(c, x - 8, y - 3, 16, 6, 7, "#dfeef6", 2, "#cfe0ea"); }
+  else { box3(c, x - 8, y - 9, 16, 18, 8, k.col, 3); box3(c, x - 6, y - 7, 12, 10, 7, "#dfeef6", 2, "#cfe0ea"); }
+}
+const ROOFS = ["#8b5a3c", "#CE1126", "#006B3F", "#1e5fbf", "#7b2d8e", "#d4a017"];
+const KIND_EMOJI = { work: "💼", market: "🛒", training: "📚", chop: "🍲", club: "🪩", church: "⛪", mosque: "🕌", hospital: "🏥", momo: "💳", station: "🚌", party: "🏛️", mall: "🛍️", cardealer: "🚗", hotel: "🏨", realty: "🏘️", fbi: "🕵️", airport: "✈️", home: "🏠" };
+const LM3 = { work: [36, "#a89a58"], market: [30, "#d99a45"], training: [46, "#5b86c4"], chop: [32, "#d56f45"], club: [44, "#4a2a70"], church: [40, "#d7dfe8"], mosque: [38, "#eef3ef"], hospital: [58, "#f3f6f7"], momo: [34, "#e8bd32"], station: [34, "#5a8ea1"], party: [46, "#7d83a8"], mall: [52, "#62aed6"], cardealer: [34, "#c04a4a"], hotel: [96, "#8790d0"], realty: [40, "#43a89c"], fbi: [50, "#34507f"], airport: [48, "#b9cde0"] };
+const homeHz = lv => [26, 34, 42, 58, 70, 84][Math.min(5, lv)];
+
+function drawHouse3D(c, b, lv, night, sx, sy, d, t, mode) {
+  const w = b.w, L = Math.min(5, lv);
+  const hz = mode === "home" ? homeHz(L) : 34 + L * 7, sk = hz * 0.22;
+  const body = mode === "home" ? ["#b9a07e", "#cfa98a", "#d9b995", "#e3d2b9", "#ece4d6", "#f2e8c9"][L] : b.col, roof = mode === "home" ? ROOFS[L] : ROOFS[Math.min(5, L + 1)];
+  box3(c, sx, sy, w, d, hz, body, sk, roof);
+  winGrid(c, sx, sy, w, d, hz, sk, 2 + (L >= 3 ? 1 : 0), night); doorAt3(c, sx, sy, w, d, sk);
+  if (L >= 2) { c.fillStyle = "#aeb4ba"; c.fillRect(sx - 6, sy + d - 6, 26, 9); c.fillRect(sx + w - 20, sy + d - 6, 26, 9); c.fillStyle = "#8d949a"; c.fillRect(sx - 6, sy + d - 11, 4, 14); c.fillRect(sx + w + 16, sy + d - 11, 4, 14); }
+  if (L >= 3) { c.fillStyle = "#d9d2c4"; c.fillRect(sx + 6 - sk * 0.5, sy + d - hz * 0.55, w - 12, 4); c.fillStyle = "#8d949a"; for (let i = 0; i < 6; i++) c.fillRect(sx + 8 - sk * 0.5 + i * ((w - 16) / 5), sy + d - hz * 0.55 - 7, 2, 7); }
+  if (L >= 3 && mode === "home") { c.fillStyle = "#d9b23a"; c.fillRect(sx + w + 4, sy + d - 14, 12, 10); }
+  if (L >= 4) { c.fillStyle = "#1c2f5a"; c.fillRect(sx - sk + w * 0.15, sy - hz + d * 0.25, 18, d * 0.5); c.fillRect(sx - sk + w * 0.15 + 22, sy - hz + d * 0.25, 18, d * 0.5); box3(c, sx + w - 38, sy + d + 8, 30, 8, 8, "#2f6fb0", 2); }
+  if (L >= 5 && mode === "home") { c.fillStyle = "#333"; c.fillRect(sx + w - sk - 8, sy - hz - 30, 2, 32); c.fillStyle = "#FCD116"; c.fillRect(sx + w - sk - 6, sy - hz - 30, 14, 9); drawTree(c, { x: sx - 14, y: sy + d + 10, k: "palm" }, t); }
+}
+function drawProp3D(c, b, pk, lv, owned, night, sx, sy, d, t) {
+  const w = b.w;
+  if (pk === "plot") {
+    c.fillStyle = "#b99a68"; c.fillRect(sx + 3, sy + 4, w - 6, d - 4); c.strokeStyle = "#6b4f2a"; c.lineWidth = 2;
+    for (let i = 0; i <= 6; i++) { const px = sx + 3 + i * (w - 6) / 6; c.beginPath(); c.moveTo(px, sy + d - 3); c.lineTo(px, sy + d - 14); c.stroke(); }
+    c.beginPath(); c.moveTo(sx + 3, sy + d - 9); c.lineTo(sx + w - 3, sy + d - 9); c.stroke();
+  } else if (pk === "house") drawHouse3D(c, b, lv, night, sx, sy, d, t, "prop");
+  else if (pk === "apartment") { const hz = 78 + lv * 4, sk = hz * 0.22; box3(c, sx, sy, w, d, hz, b.col, sk, lv ? "#CE1126" : "#6b7077"); winGrid(c, sx, sy, w, d, hz, sk, 3, night); doorAt3(c, sx, sy, w, d, sk); }
+  else if (pk === "shop") { const hz = 30, sk = hz * 0.22; box3(c, sx, sy, w, d, hz, b.col, sk, "#8a8f96");
+    for (let i = 0; i < 8; i++) { c.fillStyle = i % 2 ? "#ffffff" : "#CE1126"; c.fillRect(sx + i * w / 8 - sk * 0.9, sy + d - hz + 3, w / 8, 10); }
+    c.fillStyle = night ? "#ffe28a" : "#cfe6f2"; c.fillRect(sx + 12 - sk * 0.4, sy + d - 20, 24, 12); doorAt3(c, sx + 22, sy, w, d, sk); }
+  else if (pk === "warehouse") { const hz = 34, sk = hz * 0.22; box3(c, sx - 2, sy, w + 4, d, hz, "#8e949a", sk, "#6f757c"); c.fillStyle = "#666d74"; c.fillRect(sx + 16 - sk * 0.3, sy + d - 26, w - 28, 26); c.strokeStyle = "#4e545a"; c.lineWidth = 1; for (let i = 1; i < 5; i++) { c.beginPath(); c.moveTo(sx + 16 - sk * 0.3, sy + d - 26 + i * 5); c.lineTo(sx + w - 12 - sk * 0.3, sy + d - 26 + i * 5); c.stroke(); } }
+  else { const hz = 58 + lv * 4, sk = hz * 0.22; box3(c, sx, sy, w, d, hz, b.col, sk, "#7a3a3a"); winGrid(c, sx, sy, w, d, hz, sk, 3, night); doorAt3(c, sx, sy, w, d, sk); c.fillStyle = "#d9d2c4"; c.fillRect(sx + 4 - sk * 0.5, sy + d - hz * 0.5, w - 8, 3);
+    c.fillStyle = "#222"; c.fillRect(sx + 10 - sk, sy + d - hz + 4, w - 20, 9); c.fillStyle = "#FCD116"; c.font = "bold 7px system-ui,sans-serif"; c.textAlign = "center"; c.fillText("GUEST HOUSE", sx + w / 2 - sk, sy + d - hz + 11); }
+  if (!owned) { c.fillStyle = "#6b4a2a"; c.fillRect(sx + 5, sy + d - 12, 2, 16); c.fillStyle = "#CE1126"; c.fillRect(sx + 7, sy + d - 12, 28, 11); c.fillStyle = "#fff"; c.font = "bold 8px system-ui,sans-serif"; c.textAlign = "center"; c.fillText("FOR SALE", sx + 21, sy + d - 4); }
+  else { const hzz = pk === "plot" ? 20 : (pk === "apartment" ? 78 + lv * 4 : pk === "guesthouse" ? 58 + lv * 4 : pk === "house" ? 34 + Math.min(5, lv) * 7 : 34), skk = hzz * 0.22; c.fillStyle = "#333"; c.fillRect(sx + w / 2 - skk, sy + d / 2 - hzz - 22, 2, 24); c.fillStyle = "#2e9e5b"; c.fillRect(sx + w / 2 - skk + 2, sy + d / 2 - hzz - 22, 14, 9); }
+}
+function drawLandmark3D(c, b, t, night, sx, sy, d) {
+  const k = b.kind, [hz, col] = LM3[b.kind], sk = hz * 0.22, w = b.w, cx = sx + w / 2 - sk, cy = sy + d / 2 - hz;
+  const topCol = k === "church" ? "#7c8aa6" : k === "mosque" ? "#bfe0cd" : k === "club" ? "#1c1130" : k === "hospital" ? "#ffffff" : null;
+  box3(c, sx, sy, w, d, hz, col, sk, topCol);
+  if (k === "mall") { for (let r = 0; r < 2; r++) for (let i = 0; i < 4; i++) { c.fillStyle = night ? "#ffe28a" : "#d9f0fb"; c.fillRect(sx + 6 + i * 20 - sk * (12 + r * 18) / hz, sy + d - 18 - r * 18 - 10, 15, 13); } }
+  else winGrid(c, sx, sy, w, d, hz, sk, 3, night);
+  doorAt3(c, sx, sy, w, d, sk);
+  if (k === "church") { box3(c, cx - 9, cy - 4, 18, 8, 26, "#cfd6df", 5, "#7c8aa6"); c.fillStyle = "#fff"; c.fillRect(cx - 6.5, cy - 30 - 15, 3, 15); c.fillRect(cx - 11, cy - 30 - 10, 12, 3); }
+  else if (k === "mosque") { c.fillStyle = "#3aa87a"; c.beginPath(); c.arc(cx, cy - 2, 17, Math.PI, 0); c.fill(); c.fillStyle = "#e8c13a"; c.fillRect(cx - 1, cy - 26, 2, 8); box3(c, sx + w - 14 - sk, sy + 4 - hz, 9, 8, 32, "#f4f7f4", 7); }
+  else if (k === "hospital") { c.fillStyle = "#d92d2d"; c.fillRect(cx - 14, cy - 3, 28, 6); c.fillRect(cx - 4, cy - 8, 8, 16); }
+  else if (k === "club") { c.fillStyle = night ? "#ff3df2" : "#9a58b8"; c.fillRect(sx + 10 - sk * 0.5, sy + d - hz + 12, w - 20, 12); c.fillStyle = night ? "#fff" : "#e8d8f4"; c.font = "bold 10px system-ui,sans-serif"; c.textAlign = "center"; c.fillText("CLUB", sx + w / 2 - sk * 0.5, sy + d - hz + 22); }
+  else if (k === "party") { c.fillStyle = "#333"; c.fillRect(cx + 10, cy - 34, 2, 34); c.fillStyle = "#CE1126"; c.fillRect(cx + 12, cy - 34, 16, 5); c.fillStyle = "#FCD116"; c.fillRect(cx + 12, cy - 29, 16, 5); c.fillStyle = "#006B3F"; c.fillRect(cx + 12, cy - 24, 16, 5); }
+  else if (k === "station") box3(c, sx + 6, sy + d + 5, 46, 9, 15, "#f4f4f4", 4), (c.fillStyle = "#CE1126", c.fillRect(sx + 6, sy + d + 5 + 9 - 6, 46, 4));
+  else if (k === "cardealer") box3(c, sx + w - 42, sy + d + 6, 34, 8, 8, "#d63b3b", 3);
+  else if (k === "work") { box3(c, sx + w - 24, sy + d + 4, 12, 6, 9, "#a0723a", 2); box3(c, sx + 8, sy + d + 5, 12, 6, 9, "#a0723a", 2); }
+  else if (k === "hotel") { box3(c, cx - 14, cy - 3, 28, 6, 9, "#2d3375", 3); }
+  else if (k === "market" || k === "chop") { for (let i = 0; i < 8; i++) { c.fillStyle = i % 2 ? "#ffffff" : (k === "chop" ? "#CE1126" : "#FCD116"); c.fillRect(sx + i * w / 8 - sk * 0.9, sy + d - hz + 3, w / 8, 10); } }
+  else if (k === "airport") { box3(c, cx - 8, cy - 4, 14, 8, 30, "#e8edf2", 4, "#cfd8e2"); c.fillStyle = "#2d6fb0"; c.fillRect(cx - 14, cy - 40, 26, 8); }
+  else if (k === "fbi") { c.fillStyle = "#ffffff"; c.font = "bold 11px system-ui,sans-serif"; c.textAlign = "center"; c.fillText("FBI", sx + w / 2 - sk * 0.5, sy + d - hz + 18); }
+  else if (k === "momo") { c.fillStyle = "#006B3F"; c.font = "bold 12px system-ui,sans-serif"; c.textAlign = "center"; c.fillText("MoMo", sx + w / 2 - sk * 0.5, sy + d - hz + 18); }
+}
+function drawBillboard3D(c, b, t, sx, sy, d) {
+  const ad = adForSlot(b.slot), cx = sx + b.w / 2, base = sy + d;
+  c.fillStyle = "rgba(0,0,0,.18)"; c.beginPath(); c.ellipse(cx, base + 2, 46, 7, 0, 0, 7); c.fill();
+  c.fillStyle = "#2b3138"; c.fillRect(cx - 34, base - 46, 5, 48); c.fillRect(cx + 29, base - 46, 5, 48);
+  const bx = cx - 62, by = base - 112, bw = 124, bh = 64;
+  c.fillStyle = "#1c2128"; c.fillRect(bx - 3, by - 3, bw + 6, bh + 6);
+  const im = ad ? getBanner(ad.banner) : null;
+  if (im) { c.drawImage(im, bx, by, bw, bh); c.fillStyle = "rgba(0,0,0,.55)"; c.fillRect(bx, by + bh - 14, bw, 14); c.fillStyle = "#ffffff"; c.font = "700 9px system-ui,sans-serif"; c.textAlign = "center"; c.fillText(ad.biz, cx, by + bh - 4); return; }
+  const g = c.createLinearGradient(bx, by, bx + bw, by + bh);
+  if (!ad) { g.addColorStop(0, "#2f6fd0"); g.addColorStop(1, "#7a3fd0"); } else { g.addColorStop(0, ad.color); g.addColorStop(1, shade(ad.color, -0.25)); }
+  c.fillStyle = g; c.fillRect(bx, by, bw, bh);
+  c.fillStyle = !ad || lum(ad.color) < 150 ? "#ffffff" : "#16202a"; c.textAlign = "center";
+  c.font = "800 13px system-ui,sans-serif"; wrapText(c, ad ? ad.biz : "YOUR AD HERE", cx, by + 22, bw - 10, 14, 2);
+  c.font = "600 9px system-ui,sans-serif"; wrapText(c, ad ? ad.slogan : "GH₵" + CONFIG.AD_PRICE_PER_DAY + " a day. Tap to book.", cx, by + 40, bw - 12, 11, 2);
+  c.fillStyle = "rgba(255,255,255,.75)"; c.font = "bold 8px system-ui,sans-serif"; c.fillText("BILLBOARD #" + (b.slot + 1) + (ad ? "" : " · TAP TO BOOK"), cx, by + bh - 5);
+}
+function drawBuilding3D(c, b, t, night) {
+  const k = b.kind, sx = b.x - cam.x, sy = (b.y - cam.y) * SY, d = b.h * SY, p = S.props[b.key];
+  if (k === "billboard") return drawBillboard3D(c, b, t, sx, sy, d);
+  c.fillStyle = "rgba(0,0,0,.16)"; c.fillRect(sx + 6, sy + d - 2, b.w, 8);
+  let pk = k;
+  if (k === "home") { if (S.region === S.home.region) return drawHouse3D(c, b, S.home.level, night, sx, sy, d, t, "home"); pk = "guesthouse"; }
+  else if (PROPS[k]) pk = p ? p.type : k;
+  if (PROPS[pk]) return drawProp3D(c, b, pk, p ? p.level : 0, !!p, night, sx, sy, d, t);
+  drawLandmark3D(c, b, t, night, sx, sy, d);
+}
+function pinHz(b) {
+  if (b.kind === "home") return S.region === S.home.region ? homeHz(S.home.level) + (S.home.level >= 5 ? 32 : 0) : 58;
+  if (LM3[b.kind]) { const hz = LM3[b.kind][0]; return hz + (b.kind === "church" ? 48 : b.kind === "mosque" ? 28 : b.kind === "hotel" ? 4 : 0); }
+  if (b.kind === "billboard") return 100;
+  const p = S.props[b.key], pt = p ? p.type : b.kind, lv = p ? p.level : 0;
+  return ({ house: 34 + Math.min(5, lv) * 7, apartment: 78 + lv * 4, shop: 30, warehouse: 34, guesthouse: 58 + lv * 4, plot: 20 })[pt] || 40;
+}
+function drawPin(c, b, t) {
+  const hz = pinHz(b), sk = hz * 0.22, x = b.x - cam.x + b.w / 2 - sk, y = (b.y - cam.y) * SY + b.h * SY / 2 - hz - 20 + Math.sin(t / 420 + b.lot) * 2;
+  const emoji = b.kind === "home" && S.region !== S.home.region ? "🛏️" : KIND_EMOJI[b.kind];
+  c.fillStyle = "rgba(0,0,0,.18)"; c.beginPath(); c.ellipse(x, y + 22, 8, 3, 0, 0, 7); c.fill();
+  c.fillStyle = "#ffffff"; c.beginPath(); c.moveTo(x - 5, y + 13); c.lineTo(x + 5, y + 13); c.lineTo(x, y + 21); c.closePath(); c.fill();
+  c.beginPath(); c.arc(x, y, 16, 0, 7); c.fill();
+  if (b.kind === "home" && S.region === S.home.region) { c.strokeStyle = "#4caf75"; c.lineWidth = 3; c.beginPath(); c.arc(x, y, 16, 0, 7); c.stroke(); }
+  c.font = "19px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(emoji, x, y + 1); c.textBaseline = "alphabetic";
+}
+function drawWorld(t) {
+  ensureCity();
+  const R = REGIONS[S.region], night = S.slot === 2, wh = H / SY;
+  cam.x = clamp(player.x - W / 2, 0, Math.max(0, WW - W)); cam.y = clamp(player.y - wh / 2 - 10, 0, Math.max(0, WHH - wh));
+  ctx.setTransform(DPR * ZS, 0, 0, DPR * ZS, 0, 0);
+  ctx.fillStyle = GROUND[R.b]; ctx.fillRect(0, 0, W, H);
+  const vx0 = cam.x - 60, vx1 = cam.x + W + 60, vy0 = cam.y - 120, vy1 = cam.y + wh + 60;
+  ctx.save(); ctx.translate(-cam.x, -cam.y * SY); ctx.scale(1, SY);
+  if (R.b === "coast" || R.b === "lake") { ctx.fillStyle = "#eadfb4"; ctx.fillRect(0, WH, WW, 30); ctx.fillStyle = R.b === "coast" ? "#5fa3d6" : "#6bbfcc"; ctx.fillRect(0, WH + 30, WW, 80);
+    ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 2; for (let x = Math.floor(vx0 / 40) * 40; x < vx1; x += 40) { ctx.beginPath(); ctx.moveTo(x, WH + 46 + Math.sin(t / 500 + x) * 3); ctx.quadraticCurveTo(x + 10, WH + 38, x + 20, WH + 46); ctx.stroke(); } }
+  ctx.fillStyle = "#b3bac3"; ctx.fillRect(0, 0, WW, WH);
+  ctx.strokeStyle = "#f3f5f8"; ctx.lineWidth = 2.5; ctx.setLineDash([16, 14]);
+  for (let r = 0; r <= ROWS; r++) { const y = r * (BH + RD) + RD / 2; if (y < vy0 || y > vy1) continue; ctx.beginPath(); ctx.moveTo(Math.max(0, vx0), y); ctx.lineTo(Math.min(WW, vx1), y); ctx.stroke(); }
+  for (let c = 0; c <= COLS; c++) { const x = c * (BW + RD) + RD / 2; if (x < vx0 || x > vx1) continue; ctx.beginPath(); ctx.moveTo(x, Math.max(0, vy0)); ctx.lineTo(x, Math.min(WH, vy1)); ctx.stroke(); }
+  ctx.setLineDash([]); ctx.fillStyle = "#b3bac3";
+  for (let r = 0; r <= ROWS; r++) for (let c = 0; c <= COLS; c++) ctx.fillRect(c * (BW + RD), r * (BH + RD), RD, RD);
+  CITY.blocks.forEach(b => {
+    if (b.x + BW < vx0 || b.x > vx1 || b.y + BH < vy0 || b.y > vy1) return;
+    ctx.fillStyle = "#cdd1d6"; ctx.fillRect(b.x - 8, b.y - 8, BW + 16, BH + 16);
+    ctx.fillStyle = b.park ? "#8fc27a" : GROUND[R.b]; ctx.fillRect(b.x, b.y, BW, BH);
+    if (b.airport) { ctx.fillStyle = "#8d949c"; ctx.fillRect(b.x, b.y, BW, BH); ctx.fillStyle = "#4b5159"; ctx.fillRect(b.x + 8, b.y + 140, BW - 16, 78); ctx.strokeStyle = "#f3f5f8"; ctx.lineWidth = 3; ctx.setLineDash([22, 16]); ctx.beginPath(); ctx.moveTo(b.x + 14, b.y + 179); ctx.lineTo(b.x + BW - 14, b.y + 179); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = "#f3f5f8";
+      for (let i = 0; i < 6; i++) { ctx.fillRect(b.x + 12, b.y + 148 + i * 11, 18, 5); ctx.fillRect(b.x + BW - 30, b.y + 148 + i * 11, 18, 5); }
+      const px = b.x + 40 + ((t / 25) % (BW - 100)); ctx.fillStyle = "#f4f6f8"; ctx.beginPath(); ctx.ellipse(px, b.y + 179, 30, 6, 0, 0, 7); ctx.fill(); ctx.fillRect(px - 6, b.y + 160, 10, 38); ctx.fillRect(px - 28, b.y + 172, 12, 14); ctx.fillStyle = "#CE1126"; ctx.fillRect(px - 26, b.y + 177, 52, 2); }
+    if (b.park) { ctx.fillStyle = "#d9cfa8"; ctx.fillRect(b.x + 20, b.y + BH / 2 - 8, BW - 40, 16); ctx.fillStyle = "#6fb6e3"; ctx.beginPath(); ctx.ellipse(b.x + BW / 2, b.y + BH / 2, 26, 22, 0, 0, 7); ctx.fill(); ctx.fillStyle = "#bfe7f7"; ctx.beginPath(); ctx.ellipse(b.x + BW / 2, b.y + BH / 2, 13, 11, 0, 0, 7); ctx.fill(); }
+  });
+  CITY.benches.forEach(b => { if (b.x > vx0 && b.x < vx1 && b.y > vy0 && b.y < vy1) { ctx.fillStyle = "#7a5a32"; ctx.fillRect(b.x - 10, b.y, 20, 5); } });
+  CITY.buildings.forEach(b => {
+    if (b.x + b.w < vx0 || b.x > vx1 || b.y + b.h < vy0 || b.y > vy1) return;
+    ctx.fillStyle = "#dcdfe2"; ctx.fillRect(b.x - 5, b.y - 3, b.w + 10, b.h + 9);
+    if (b.kind === "home" && S.region === S.home.region && S.home.level >= 5) { ctx.fillStyle = "#58b4e8"; ctx.fillRect(b.x + 6, b.y + b.h + 3, 46, 15); ctx.fillStyle = "#a7dcf5"; ctx.fillRect(b.x + 9, b.y + b.h + 5, 40, 4); }
+  });
+  ctx.restore();
+  const list = [];
+  CITY.buildings.forEach(b => { if (b.x + b.w > vx0 && b.x < vx1 && b.y + b.h > vy0 && b.y - 120 < vy1) list.push({ y: b.y + b.h, f: () => drawBuilding3D(ctx, b, t, night) }); });
+  CITY.trees.forEach(d => { if (d.x > vx0 && d.x < vx1 && d.y > vy0 && d.y - 50 < vy1) list.push({ y: d.y, f: () => drawTree(ctx, { x: d.x - cam.x, y: (d.y - cam.y) * SY, k: d.k }, t) }); });
+  CITY.lamps.forEach(l => { if (l.x > vx0 && l.x < vx1 && l.y > vy0 && l.y < vy1) list.push({ y: l.y, f: () => { const x = l.x - cam.x, y = (l.y - cam.y) * SY; ctx.fillStyle = "#3a4048"; ctx.fillRect(x - 1.5, y - 24, 3, 24); ctx.fillStyle = night ? "#fff2a8" : "#9aa3ad"; ctx.beginPath(); ctx.arc(x, y - 25, 3.5, 0, 7); ctx.fill(); } }); });
+  CITY.cars.forEach(k => { const [x, y] = carXY(k); if (x > vx0 - 40 && x < vx1 + 40 && y > vy0 && y < vy1 + 40) list.push({ y, f: () => drawCar(ctx, k) }); });
+  CITY.walkers.forEach(w => { const [x, y] = walkerXY(w); if (x > vx0 && x < vx1 && y > vy0 && y < vy1 + 40) list.push({ y, f: () => drawPerson(ctx, x - cam.x, (y - cam.y) * SY, w.look, w.h ? (w.dir > 0 ? "right" : "left") : (w.dir > 0 ? "down" : "up"), w.step, true, 1) }); });
+  REMOTE.forEach(r => { if (r.rx > vx0 && r.rx < vx1 && r.ry > vy0 && r.ry < vy1 + 40) list.push({ y: r.ry, f: () => { const x = r.rx - cam.x, y = (r.ry - cam.y) * SY; drawPerson(ctx, x, y, r.look || { skin: 3, outfit: 0, hair: 0 }, r.dir || "down", r.step, r.moving, 1); pill(ctx, r.name || r.username, x, y - 48, "rgba(255,255,255,.95)", "#16202a"); } }); });
+  if (!S.demo) list.push({ y: player.y, f: () => { const x = player.x - cam.x, y = (player.y - cam.y) * SY; drawPerson(ctx, x, y, S.look, player.dir, player.step, player.moving, 1.05); pill(ctx, S.name, x, y - 50, "rgba(76,175,117,.95)", "#fff"); } });
+  list.sort((a, b) => a.y - b.y).forEach(o => o.f());
+  if (S.slot === 2) { ctx.fillStyle = "rgba(15,20,75,.32)"; ctx.fillRect(0, 0, W, H); }
+  else if (S.slot === 0) { ctx.fillStyle = "rgba(255,205,130,.10)"; ctx.fillRect(0, 0, W, H); }
+  if (night) {
+    ctx.globalCompositeOperation = "lighter";
+    CITY.lamps.forEach(l => { if (l.x > vx0 && l.x < vx1 && l.y > vy0 && l.y < vy1) { const x = l.x - cam.x, y = (l.y - cam.y) * SY - 25, g = ctx.createRadialGradient(x, y, 1, x, y, 40); g.addColorStop(0, "rgba(255,230,130,.5)"); g.addColorStop(1, "rgba(255,230,130,0)"); ctx.fillStyle = g; ctx.fillRect(x - 42, y - 42, 84, 84); } });
+    CITY.buildings.forEach(b => { if (b.kind === "club" && b.x + b.w > vx0 && b.x < vx1 && b.y + b.h > vy0 && b.y < vy1) { const x = b.x - cam.x + b.w / 2, y = (b.y - cam.y) * SY + 10, g = ctx.createRadialGradient(x, y, 4, x, y, 100); g.addColorStop(0, "rgba(255,60,240,.5)"); g.addColorStop(1, "rgba(60,240,255,0)"); ctx.fillStyle = g; ctx.fillRect(x - 100, y - 100, 200, 200); } });
+    ctx.globalCompositeOperation = "source-over";
+  }
+  CITY.buildings.forEach(b => { if (KIND_EMOJI[b.kind] && b.x + b.w > vx0 && b.x < vx1 && b.y + b.h > vy0 && b.y - 140 < vy1) drawPin(ctx, b, t); });
+  if (near) { const hz = pinHz(near), sk = hz * 0.22, x = near.x - cam.x + near.w / 2 - sk, y = (near.y - cam.y) * SY + near.h * SY / 2 - hz - 48; pill(ctx, "Tap Enter: " + displayName(near), x, y, "#4caf75", "#fff"); }
+  drawMini(t);
+}
+function drawMini(t) {
+  const mw = mini.width, mh = mini.height, s = mw / WW; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.clearRect(0, 0, mw, mh);
+  mctx.fillStyle = "rgba(255,255,255,.94)"; mctx.fillRect(0, 0, mw, mh);
+  CITY.blocks.forEach(b => { mctx.fillStyle = b.park ? "#8fc27a" : "#cfd4da"; mctx.fillRect(b.x * s, b.y * s, BW * s, BH * s); });
+  CITY.buildings.forEach(b => { const K = KINDS[b.kind]; let col = null; if (PROPS[b.kind]) { if (S.props[b.key]) col = "#2e9e5b"; } else if (b.kind === "home" && S.region !== S.home.region) col = null; else if (b.kind !== "billboard") col = K.m; if (!col) return; mctx.fillStyle = col; mctx.fillRect(b.x * s - 1, b.y * s - 1, 6, 6); });
+  mctx.strokeStyle = "rgba(22,32,42,.6)"; mctx.lineWidth = 2; mctx.strokeRect(cam.x * s, cam.y * s, W * s, (H / SY) * s);
+  if (Math.floor(t / 350) % 2 && !S.demo) { mctx.fillStyle = "#4caf75"; mctx.beginPath(); mctx.arc(player.x * s, player.y * s, 5, 0, 7); mctx.fill(); mctx.strokeStyle = "#fff"; mctx.lineWidth = 2; mctx.stroke(); }
+}
+
+/* ---------------- Input, movement and loop ---------------- */
+const keys = {}, joy = { up: 0, down: 0, left: 0, right: 0 };
+function nearest() {
+  let best = null, bd = 26;
+  CITY.buildings.forEach(b => { const c = b.coll, dx = Math.max(c.x - player.x, 0, player.x - (c.x + c.w)), dy = Math.max(c.y - player.y, 0, player.y - (c.y + c.h)), d = Math.hypot(dx, dy); if (d <= bd) { bd = d; best = b; } });
+  return best;
+}
+function hit(px, py) { const x = px - 7, y = py - 8; return CITY.solids.some(b => x < b.x + b.w && x + 14 > b.x && y < b.y + b.h && y + 8 > b.y); }
+function updateTraffic(dt) {
+  CITY.cars.forEach(k => { const L = k.h ? WW : WH; k.pos += k.dir * k.sp * dt; if (k.pos > L + 40) k.pos = -40; if (k.pos < -40) k.pos = L + 40; });
+  CITY.walkers.forEach(w => { const L = w.h ? WW : WH; w.pos += w.dir * w.sp * dt; w.step += dt; if (w.pos > L + 20) w.pos = -20; if (w.pos < -20) w.pos = L + 20; });
+}
+function update(dt) {
+  updateTraffic(dt);
+  if (S.busy) { player.moving = false; return; }
+  const l = keys.ArrowLeft || keys.a || joy.left, r = keys.ArrowRight || keys.d || joy.right, u = keys.ArrowUp || keys.w || joy.up, d = keys.ArrowDown || keys.s || joy.down;
+  let vx = (r ? 1 : 0) - (l ? 1 : 0), vy = (d ? 1 : 0) - (u ? 1 : 0); player.moving = !!(vx || vy);
+  if (player.moving) {
+    const n = Math.hypot(vx, vy), sp = 2.4 * [1, 1.5, 1.8][S.car]; vx = vx / n * sp * dt; vy = vy / n * sp * dt * 1.3; player.step += dt;
+    if (Math.abs(vx) > Math.abs(vy)) player.dir = vx < 0 ? "left" : "right"; else player.dir = vy < 0 ? "up" : "down";
+    const nx = clamp(player.x + vx, 10, WW - 10), ny = clamp(player.y + vy, 38, WH + 22);
+    if (!hit(nx, player.y)) player.x = nx; if (!hit(player.x, ny)) player.y = ny;
+  }
+}
+let lastT = 0, lastAct = "~";
+function setAct(label) { if (label === lastAct) return; lastAct = label; const b = $("actBtn"); if (label) { b.textContent = label; b.classList.remove("idle"); } else { b.textContent = "Walk to a building"; b.classList.add("idle"); } }
+function frame(t) {
+  const dt = Math.min(40, t - lastT) / 16.67; lastT = t;
+  if (!Object.keys(heldPtr).length && (joy.up || joy.down || joy.left || joy.right)) clearInput();
+  if (FLIGHT) { drawFlight(t); if (t - FLIGHT.t0 >= FLIGHT.dur) finishFlight(); return; }
+  if (S && (S.demo || !$("game").hidden)) {
+    if (S.demo) {
+      ensureCity(); updateTraffic(dt); player.x = WW / 2 + Math.sin(t / 9000) * 720; player.y = 2 * (BH + RD) + 30; near = null; nearP = null; drawWorld(t); mini.hidden = true;
+    } else if (INSIDE) {
+      updateInside(dt); INSIDE.near = (S.busy || INSIDE.rest > t) ? null : nearestStation(); drawInterior(t); mini.hidden = true;
+      setAct(INSIDE.near ? (INSIDE.near.shape === "door" ? "Exit building" : "Use: " + (INSIDE.near.label || "here")) : null);
+    } else {
+      ensureCity(); update(dt);
+      REMOTE.forEach(r => { const dx = r.x - r.rx, dy = r.y - r.ry; r.moving = Math.hypot(dx, dy) > 1.5; r.rx += dx * 0.1 * dt; r.ry += dy * 0.1 * dt; if (r.moving) r.step += dt; });
+      near = S.busy ? null : nearest(); nearP = (S.busy || near) ? null : nearestRemote(); drawWorld(t); mini.hidden = false;
+      setAct(near ? "Enter " + displayName(near) : nearP ? "Chat with " + (nearP.name || nearP.username) : null);
+    }
+  }
+}
+function loop(t) { try { frame(t); } catch (e) { if (!loop.err) { loop.err = 1; console.error(e); } } requestAnimationFrame(loop); }
+function interact() {
+  if (!S || S.busy || S.demo) return;
+  if (INSIDE) { const s = INSIDE.near; if (s && s.act) s.act(); return; }
+  if (near) return openBuilding(near);
+  if (nearP) return playerSheet(nearP);
+}
+function taxiSheet() {
+  if (!S || S.busy) return;
+  if (INSIDE) { say("Leave the building first."); render(); return; }
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Taxi and places"), mk("p", "", S.car ? "You have a car, so rides are free. Pick a place." : "Rides cost about ₵10 to ₵40 and take no time. Pick a place."));
+    const grid = mk("div", "choices two"); el.append(grid);
+    CITY.buildings.filter(b => b.kind !== "billboard" && !PROPS[b.kind]).sort((a, b) => a.name.localeCompare(b.name)).forEach(b => {
+      const fare = taxiFare(b), nm = b.kind === "home" ? displayName(b) : b.name, btn = mk("button", "choice", nm + (fare ? " · " + fmt(fare) : ""));
+      if (S.cash < fare) btn.disabled = true;
+      btn.onclick = () => { S.cash -= fare; placeAt(b); say("You took a taxi to " + nm + "."); close(); render(); }; grid.append(btn);
+    });
+    const c = mk("button", "choice gold", "Close"); c.onclick = close; c.style.marginTop = "10px"; el.append(c);
+  });
+}
+document.addEventListener("keydown", e => {
+  if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "a", "d", "w", "s"].includes(k)) { keys[k] = true; if (k.startsWith("Arrow")) e.preventDefault(); }
+  if ((k === " " || k === "Enter" || k === "e") && !$("game").hidden && !sheetOpen) { e.preventDefault(); interact(); }
+  if (k === "t" && !$("game").hidden && !sheetOpen) taxiSheet();
+  if (k === "p" && !$("game").hidden && !sheetOpen) phoneSheet();
+});
+document.addEventListener("keyup", e => { const k = e.key.length === 1 ? e.key.toLowerCase() : e.key; keys[k] = false; });
+const heldPtr = {};
+document.querySelectorAll(".d").forEach(b => {
+  const dir = b.dataset.dir;
+  b.addEventListener("pointerdown", e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (x) {} heldPtr[e.pointerId] = dir; joy[dir] = 1; b.classList.add("held"); });
+  ["pointerup", "pointercancel", "lostpointercapture", "pointerleave"].forEach(ev => b.addEventListener(ev, e => { delete heldPtr[e.pointerId]; joy[dir] = 0; b.classList.remove("held"); }));
+  b.addEventListener("contextmenu", e => e.preventDefault());
+});
+["pointerup", "pointercancel"].forEach(ev => window.addEventListener(ev, e => { const d = heldPtr[e.pointerId]; if (d) { delete heldPtr[e.pointerId]; joy[d] = 0; document.querySelectorAll(".d").forEach(b => { if (b.dataset.dir === d) b.classList.remove("held"); }); } }, true));
+document.addEventListener("visibilitychange", clearInput);
+$("actBtn").addEventListener("click", interact);
+$("taxiBtn").addEventListener("click", taxiSheet);
+$("phoneBtn").addEventListener("click", phoneSheet);
+window.addEventListener("blur", () => { Object.keys(keys).forEach(k => keys[k] = false); Object.keys(joy).forEach(k => joy[k] = 0); });
+
+/* ---------------- Interiors and furniture ---------------- */
+let INSIDE = null, ASKFILTER = null;
+const FURN = [
+  { id: "bed1", slot: "bed", n: "Basic bed", cost: 300, rest: 5 },
+  { id: "bed2", slot: "bed", n: "Queen bed", cost: 1500, rest: 12 },
+  { id: "bed3", slot: "bed", n: "King bed with orthopedic mattress", cost: 6000, rest: 20 },
+  { id: "fan", slot: "cool", n: "Standing fan", cost: 250, rest: 4 },
+  { id: "ac", slot: "cool", n: "Air conditioner", cost: 3500, rest: 10 },
+  { id: "tv1", slot: "tv", n: "32-inch TV", cost: 1200, watch: 10 },
+  { id: "tv2", slot: "tv", n: "65-inch smart TV", cost: 6500, watch: 18 },
+  { id: "sofa", slot: "sofa", n: "Sofa set", cost: 1800, style: 1 },
+  { id: "fridge", slot: "fridge", n: "Fridge", cost: 2200 },
+  { id: "wardrobe", slot: "wardrobe", n: "Wardrobe", cost: 900 },
+  { id: "console", slot: "console", n: "Game console", cost: 3000 },
+  { id: "audio", slot: "audio", n: "Sound system", cost: 2000 },
+  { id: "table", slot: "table", n: "Dining table", cost: 1000, style: 1 },
+  { id: "rug", slot: "rug", n: "Rug", cost: 400, style: 1 },
+  { id: "plant", slot: "plant", n: "Indoor plant", cost: 150, style: 1 },
+  { id: "art", slot: "art", n: "Kente wall art", cost: 700, style: 1 },
+  { id: "gen", slot: "gen", n: "Generator, no more dumsor", cost: 4000 }
+];
+const FSLOTS = ["bed", "cool", "tv", "sofa", "fridge", "wardrobe", "console", "audio", "table", "rug", "plant", "art", "gen"];
+const FNAMES = { bed: "Bed", cool: "Cooling", tv: "TV", sofa: "Sofa", fridge: "Fridge", wardrobe: "Wardrobe", console: "Game console", audio: "Sound system", table: "Dining table", rug: "Rug", plant: "Plant", art: "Wall art", gen: "Generator" };
+const POS = { bed: [40, 128, 140, 86], wardrobe: [200, 124, 72, 92], tv: [310, 130, 100, 54], sofa: [300, 236, 150, 60], fridge: [560, 124, 56, 92], console: [420, 152, 36, 26], audio: [480, 130, 56, 52], table: [470, 250, 110, 60], rug: [150, 300, 210, 70], plant: [28, 310, 34, 56], art: [300, 40, 110, 56], cool: [200, 50, 70, 40], gen: [566, 310, 48, 44] };
+const fitem = id => FURN.find(f => f.id === id);
+const effTxt = f => f.rest ? ", rest +" + f.rest : f.watch ? ", relax +" + f.watch : f.style ? ", adds style" : "";
+function restBonusF(f) { f = f || {}; return (f.bed ? fitem(f.bed).rest : -8) + (f.cool ? fitem(f.cool).rest : 0); }
+function styleF(f) { return Object.values(f || {}).filter(id => fitem(id) && fitem(id).style).length; }
+function furnRent(p) { return 1 + Math.min(0.3, Object.keys(p.furn || {}).length * 0.03); }
+
+function furnSheet(tgt, title) {
+  tgt.furn = tgt.furn || {};
+  showSheet((el, close) => {
+    el.append(mk("h2", "", title || "Furniture"), mk("p", "", "Items are delivered straight into the room. Better items replace older ones. Style items raise your reputation each week."));
+    FSLOTS.forEach(sl => {
+      const items = FURN.filter(f => f.slot === sl), cur = tgt.furn[sl], curRank = cur ? items.findIndex(f => f.id === cur) : -1;
+      el.append(mk("span", "field-label", FNAMES[sl] + (cur ? " · you have: " + fitem(cur).n : " · none")));
+      const box = mk("div", "choices");
+      items.forEach((f, i) => {
+        if (i <= curRank) return;
+        const b = mk("button", "choice", f.n + " · " + fmt(f.cost) + effTxt(f)); if (S.cash < f.cost) b.disabled = true;
+        b.onclick = () => { S.cash -= f.cost; tgt.furn[sl] = f.id; if (INSIDE) { INSIDE.spec = buildSpec(INSIDE.b); unstick(); } S.rep += 1; say("You bought: " + f.n.toLowerCase() + "."); clampAll(); close(); render(); save(); furnSheet(tgt, title); };
+        box.append(b);
+      });
+      if (!box.children.length) box.append(mk("p", "small", "Top of the range already."));
+      el.append(box);
+    });
+    const c = mk("button", "choice gold", "Done"); c.style.marginTop = "12px"; c.onclick = close; el.append(c);
+  });
+}
+function ptypeOf(b) { const p = S.props[b.key]; return p ? p.type : b.kind; }
+function hasInterior(b) {
+  const k = b.kind; if (k === "billboard") return false;
+  if (PROPS[k]) { const t = ptypeOf(b); return t === "house" || t === "apartment" || t === "guesthouse"; }
+  return true;
+}
+const MENUS = { home: homeMenu, work: workMenu, market: marketMenu, training: trainingMenu, chop: chopMenu, club: clubMenu, church: churchMenu, mosque: mosqueMenu,
+  hospital: hospitalMenu, momo: momoMenu, station: travelSheet, party: partyMenu, mall: mallMenu, cardealer: carMenu, hotel: hotelMenu, realty: realtyMenu, airport: airSheet, fbi: fbiMenu };
+function menuOnly(fn, b, re) { return () => { ASKFILTER = re; try { fn(b); } finally { ASKFILTER = null; } }; }
+
+/* station actions inside rooms */
+function restAct(tgt) {
+  const fb = restBonusF(tgt.furn), gain = 35 + fb, left = 3 - S.slot;
+  ask("Rest", "A quiet room. Resting here gives +" + gain + " energy.", [
+    { label: "Rest · energy +" + gain, time: true, fn() { S.energy += gain; S.hunger += 10; startRest(); return "You rested in your property."; } },
+    { label: "Sleep it off · skip " + left + " slot" + (left > 1 ? "s" : ""), time: true, slots: left, fn() { S.energy += (25 + fb / 2) * left; S.hunger += 5 * left; startRest(); return "You slept through part of the day."; } },
+    { label: "Leave" }]);
+}
+function tvAct(tgt) { const it = fitem(tgt.furn.tv); ask("TV", "Relax with some TV.", [{ label: "Watch TV · energy +" + it.watch, time: true, fn() { S.energy += it.watch; S.hunger += 5; return "You watched TV and unwound."; } }, { label: "Leave" }]); }
+function sofaAct() { ask("Sofa", "A comfortable sofa.", [{ label: "Relax on the sofa · energy +8", time: true, fn() { S.energy += 8; S.hunger += 5; return "You relaxed on the sofa."; } }, { label: "Leave" }]); }
+function fridgeAct() { ask("Fridge", "Cold food, cheap and quick. Does not use a time slot.", [
+  { label: "Leftover jollof · ₵15, hunger −40", need: 15, fn() { S.cash -= 15; S.hunger -= 40; return "Leftover jollof from the fridge. Hits the spot."; } },
+  { label: "Cold water · ₵5, hunger −8", need: 5, fn() { S.cash -= 5; S.hunger -= 8; return "A cold sachet of water."; } }, { label: "Leave" }]); }
+function wardrobeAct() {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Wardrobe"), mk("p", "", "Pick an outfit colour."));
+    const sw = mk("div", "swatches");
+    OUTFITS.forEach((c, i) => { const b = mk("button", "sw" + (i === S.look.outfit ? " on" : "")); b.style.background = c; b.setAttribute("aria-label", "Outfit colour " + (i + 1)); b.onclick = () => { S.look.outfit = i; save(); close(); render(); }; sw.append(b); });
+    el.append(sw); const c = mk("button", "choice gold", "Done"); c.style.marginTop = "14px"; c.onclick = close; el.append(c);
+  });
+}
+function consoleAct() { ask("Game console", "Play football with friends.", [{ label: "Play for a while · energy −5, reputation +1", lock: S.energy < 5 ? "too tired" : "", time: true,
+  fn() { S.energy -= 5; S.hunger += 5; S.rep += 1; if (Math.random() < 0.25) { S.cash += 80; return "You won the tournament and pocketed ₵80."; } return "A fun game with friends."; } }, { label: "Leave" }]); }
+function audioAct() { ask("Sound system", "Throw a house party.", [{ label: "Host a house party · ₵200, reputation +6", need: 200, lock: S.slot === 2 ? "" : "evening only", time: true,
+  fn() { S.cash -= 200; S.rep += 6; S.hunger += 10; S.energy -= 10; if (Math.random() < 0.3) { S.cash += 400; return "The party was a hit and a guest tipped you ₵400."; } return "Your house party was the talk of the street."; } }, { label: "Leave" }]); }
+function tableAct() { ask("Dining table", "Cook a proper meal.", [{ label: "Cook a meal · ₵25, hunger −50", need: 25, fn() { S.cash -= 25; S.hunger -= 50; S.energy += 5; return "You cooked and ate a proper meal."; } }, { label: "Leave" }]); }
+function barAct() { ask("Bar", "Cold drinks and loud music.", [{ label: "Buy a cold drink · ₵30, reputation +1", need: 30, fn() { S.cash -= 30; S.rep += 1; return "You bought a cold drink and chatted with people at the bar."; } }, { label: "Leave" }]); }
+
+function buildSpec(b) {
+  const k = b.kind, st = [];
+  const add = (x, y, w, h, label, shape, col, act, o) => { st.push(Object.assign({ x, y, w, h, label, shape, col, act }, o || {})); };
+  const only = (fn, re) => menuOnly(fn, b, re), all = fn => () => fn(b);
+  let floor = "#c4b08a", wall = "#e7dfc9", spLevel = 0, spRes = false;
+  if (PROPS[k] || k === "home") {
+    const away = k === "home" && S.region !== S.home.region;
+    if (away) { floor = "#b6a47c"; wall = "#d8cfb3"; add(220, 128, 200, 44, "Reception", "counter", "#8a5a2b", all(homeMenu)); }
+    else {
+      const mode = k === "home" ? "home" : (S.props[b.key] ? "owned" : "sale"), tgt = k === "home" ? S.home : S.props[b.key];
+      const lv = k === "home" ? S.home.level : Math.min(5, (tgt ? tgt.level : 0) + 1); spLevel = lv; spRes = true;
+      floor = ["#b9a07a", "#c2b08a", "#c9c0a0", "#9fb2bb", "#a8a0c0", "#d4c070"][lv]; wall = ["#e0d6bd", "#e6dcc6", "#e9e5d4", "#d7e3ea", "#e1dcef", "#f3e9b8"][lv];
+      if (mode === "sale") { add(240, 128, 160, 44, "Sales agent", "desk", "#6a4a2a", all(propertyMenu)); }
+      else {
+        const f = tgt.furn = tgt.furn || {};
+        add(...POS.bed, f.bed ? "Bed" : "Sleep on the mat", "bed", f.bed || "mat", mode === "home" ? only(homeMenu, /Rest|Sleep/) : () => restAct(tgt));
+        const slot = (sl, label, shape, act, o) => {
+          const p = POS[sl];
+          if (f[sl]) add(p[0], p[1], p[2], p[3], act ? label : "", shape, f[sl], act, o);
+          else if (["tv", "sofa", "fridge", "wardrobe"].includes(sl)) add(p[0], p[1], p[2], p[3], "Add " + FNAMES[sl].toLowerCase(), "empty", "#000", () => furnSheet(tgt, "Order furniture"), { nosolid: true });
+        };
+        slot("wardrobe", "Wardrobe", "wardrobe", wardrobeAct); slot("tv", "TV", "tv", () => tvAct(tgt)); slot("sofa", "Sofa", "sofa", sofaAct); slot("fridge", "Fridge", "fridge", fridgeAct);
+        slot("console", "Console", "console", consoleAct); slot("audio", "Sound system", "audio", audioAct); slot("table", "Table", "table", tableAct);
+        slot("rug", "", "rug", null, { layer: "floor" }); slot("plant", "", "plant", null); slot("art", "", "art", null, { layer: "wall" }); slot("cool", "", "cool", null, { layer: "wall" }); slot("gen", "", "gen", null);
+        add(40, 250, 64, 50, "Order furniture", "desk", "#4a3018", () => furnSheet(tgt, mode === "home" ? "Furniture for your home" : "Furniture for " + tgt.name));
+        add(120, 250, 64, 50, mode === "home" ? "Home upgrades" : "Manage", "desk", "#4a3018", mode === "home" ? only(homeMenu, /Upgrade|profile/) : () => propertyMenu(b));
+      }
+    }
+  } else switch (k) {
+    case "chop": floor = "#b98a5a"; wall = "#e8c9a0"; add(200, 128, 240, 44, "Order food", "counter", "#7a4a22", all(chopMenu)); add(50, 230, 80, 44, "", "table", "#8a5a2b"); add(480, 230, 80, 44, "", "table", "#8a5a2b"); add(50, 320, 80, 44, "", "table", "#8a5a2b"); add(480, 320, 80, 44, "", "table", "#8a5a2b"); break;
+    case "club": floor = "#2a1740"; wall = "#1a0f2b"; add(200, 200, 240, 130, "Dance floor", "dance", "#ff3df2", only(clubMenu, /Dance/), { layer: "floor" }); add(40, 128, 170, 38, "Bar", "counter", "#5a2a7a", barAct); add(250, 124, 140, 42, "DJ booth", "dj", "#111", only(clubMenu, /DJ/)); add(470, 150, 130, 80, "VIP booth", "booth", "#a01040", only(clubMenu, /VIP/)); break;
+    case "church": floor = "#8a6a4a"; wall = "#e6e8ef"; add(60, 210, 200, 90, "Pews", "pews", "#6b4a2a", only(churchMenu, /Sunday service|Pray quietly/)); add(380, 210, 200, 90, "", "pews", "#6b4a2a"); add(250, 128, 140, 44, "Pastor", "altar", "#ffffff", only(churchMenu, /Meet the congregation/)); add(560, 300, 40, 56, "Offering box", "box", "#8a1d1d", only(churchMenu, /tithe|offering/)); break;
+    case "mosque": floor = "#2f7a5a"; wall = "#e8efe9"; add(150, 200, 340, 130, "Prayer hall", "carpet", "#0f5a3a", only(mosqueMenu, /Friday prayers|Pray quietly/), { layer: "floor" }); add(250, 128, 140, 44, "Imam's podium", "altar", "#d8d8c0", only(mosqueMenu, /Meet the community/)); add(560, 300, 40, 56, "Charity box", "box", "#0f7a4d", only(mosqueMenu, /sadaqa/)); break;
+    case "hospital": floor = "#d7e3e6"; wall = "#f0f5f6"; add(200, 128, 240, 44, "Nurse desk", "counter", "#2a6a8a", only(hospitalMenu, /nurse/)); add(50, 230, 130, 64, "Ward bed", "hbed", "#ffffff", only(hospitalMenu, /Full check-up/)); add(480, 250, 90, 40, "", "sofa", "#7a8a9a"); break;
+    case "hotel": floor = "#b9a0c9"; wall = "#e3e6f4"; add(200, 128, 240, 44, "Reception", "counter", "#3a3a8a", only(hotelMenu, /Book a room/)); add(380, 250, 200, 56, "Lounge", "sofa", "#4a4a9a", only(hotelMenu, /Network/)); break;
+    case "mall": floor = "#cfd6dc"; wall = "#eaf3f8"; add(40, 128, 170, 44, "Clothes", "rack", "#CE1126", only(mallMenu, /Designer outfit/)); add(430, 128, 170, 44, "Phones", "shelf", "#1e5a7a", only(mallMenu, /Smartphone/)); add(220, 230, 200, 90, "Furniture store", "furnshow", "#8a5a2b", () => furnSheet(S.home, "Furniture store")); break;
+    case "cardealer": floor = "#9aa0a6"; wall = "#e8e8e8"; add(70, 200, 150, 70, "Used car", "car", "#CE1126", only(carMenu, /Used car/)); add(400, 200, 150, 70, "Luxury SUV", "car", "#111111", only(carMenu, /Luxury/)); break;
+    case "market": floor = "#a68a5a"; wall = "#e8d9b0"; add(60, 150, 180, 70, "Trade stall", "stall", "#CE1126", all(marketMenu)); add(400, 150, 180, 70, "", "stall", "#006B3F"); add(220, 290, 200, 60, "", "stall", "#FCD116"); break;
+    case "work": floor = "#8a8f94"; wall = "#cfd3d6"; add(230, 128, 180, 44, "Foreman", "desk", "#6a4a2a", all(workMenu)); add(50, 260, 70, 50, "", "crate", "#8a5a2b"); add(130, 300, 70, 50, "", "crate", "#8a5a2b"); add(520, 250, 70, 50, "", "crate", "#8a5a2b"); break;
+    case "training": floor = "#a9b4c9"; wall = "#e6edf8"; add(230, 128, 180, 44, "Instructor", "desk", "#1e3f7a", only(trainingMenu, /Short course/)); add(100, 230, 440, 90, "Classroom", "desks", "#4b78b8", only(trainingMenu, /Bootcamp/)); break;
+    case "momo": floor = "#d9c27a"; wall = "#f3e6a8"; add(200, 128, 240, 44, "MoMo counter", "counter", "#006B3F", all(momoMenu)); break;
+    case "station": floor = "#9aa7ad"; wall = "#d5dde0"; add(200, 128, 240, 44, "Ticket desk", "counter", "#CE1126", all(travelSheet)); add(60, 260, 120, 36, "", "sofa", "#555555"); add(460, 260, 120, 36, "", "sofa", "#555555"); break;
+    case "party": floor = "#8e92ae"; wall = "#dfe1ee"; add(230, 128, 180, 44, "Party desk", "desk", "#222222", all(partyMenu)); break;
+    case "airport": floor = "#c7d3de"; wall = "#e8f0f7"; add(180, 128, 280, 44, "Check-in desk", "counter", "#2d6fb0", all(airSheet)); add(60, 250, 120, 36, "", "sofa", "#5b6f8a"); add(460, 250, 120, 36, "", "sofa", "#5b6f8a"); break;
+    case "fbi": floor = "#7d8a9e"; wall = "#c9d2e0"; add(60, 128, 200, 44, "Front desk", "counter", "#1e3a6a", fbiDesk); add(380, 128, 200, 60, "Interview room", "desk", "#111827", fbiInterview); break;
+    case "realty": floor = "#a3cfc8"; wall = "#e3f3f0"; add(230, 128, 180, 44, "Agent desk", "desk", "#0f5a52", all(realtyMenu)); break;
+    default: add(230, 128, 180, 44, "Counter", "counter", "#6a4a2a", () => openBuildingMenu(b));
+  }
+  add(290, 394, 60, 20, "Exit", "door", "#6b4a2a", leaveBuilding, { nosolid: true });
+  const solid = st.filter(s => !s.layer && !s.nosolid);
+  return { floor, wall, st, solid, level: spLevel, res: spRes };
+}
+function openBuildingMenu(b) { if (MENUS[b.kind]) MENUS[b.kind](b); }
+function enterBuilding(b) { INSIDE = { b, spec: buildSpec(b), p: { x: 320, y: 372, dir: "up", moving: false, step: 0 }, near: null }; }
+function leaveBuilding() { if (INSIDE) placeAt(INSIDE.b); }
+
+function drawStation(c, s, t, night) {
+  const { x, y, w, h } = s, col = s.col;
+  if (!s.layer && s.shape !== "empty") { c.fillStyle = "rgba(0,0,0,.18)"; c.fillRect(x + 3, y + h - 2, w, 6); }
+  switch (s.shape) {
+    case "counter": c.fillStyle = col; c.fillRect(x, y, w, h); c.fillStyle = "rgba(255,255,255,.25)"; c.fillRect(x, y, w, 8); break;
+    case "table": c.fillStyle = col; rr(c, x, y, w, h, 8); c.fill(); c.fillStyle = "#3a2a18"; c.fillRect(x - 10, y + h / 2 - 6, 8, 12); c.fillRect(x + w + 2, y + h / 2 - 6, 8, 12); break;
+    case "dance": c.globalAlpha = 0.6; for (let i = 0; i < 8; i++) for (let j = 0; j < 4; j++) { c.fillStyle = (i + j + Math.floor(t / 400)) % 2 === 0 ? "#ff3df2" : "#3df2ff"; c.fillRect(x + i * w / 8, y + j * h / 4, w / 8, h / 4); } c.globalAlpha = 1; break;
+    case "booth": c.fillStyle = col; rr(c, x, y, w, h, 10); c.fill(); c.fillStyle = "#eeeeee"; c.fillRect(x + w / 2 - 18, y + h / 2 - 10, 36, 20); break;
+    case "dj": c.fillStyle = "#111111"; c.fillRect(x, y, w, h); c.fillStyle = "#555555"; c.beginPath(); c.arc(x + 36, y + 22, 14, 0, 7); c.arc(x + w - 36, y + 22, 14, 0, 7); c.fill(); c.strokeStyle = "#ff3df2"; c.lineWidth = 2; c.strokeRect(x, y, w, h); break;
+    case "altar": c.fillStyle = "#8a6a4a"; c.fillRect(x, y, w, h); c.fillStyle = col; c.fillRect(x + 10, y - 8, w - 20, 14); c.fillStyle = "#d4a017"; c.fillRect(x + w / 2 - 2, y - 28, 4, 20); c.fillRect(x + w / 2 - 8, y - 22, 16, 4); break;
+    case "pews": for (let i = 0; i < 3; i++) { c.fillStyle = col; c.fillRect(x, y + i * h / 3, w, h / 3 - 8); } break;
+    case "carpet": c.fillStyle = col; c.fillRect(x, y, w, h); c.strokeStyle = "#d8d8c0"; c.lineWidth = 2; c.strokeRect(x + 8, y + 8, w - 16, h - 16); for (let i = 1; i < 5; i++) { c.beginPath(); c.moveTo(x + i * w / 5, y + 8); c.lineTo(x + i * w / 5, y + h - 8); c.stroke(); } break;
+    case "box": c.fillStyle = col; c.fillRect(x, y, w, h); c.fillStyle = "#000000"; c.fillRect(x + 8, y + 8, w - 16, 4); break;
+    case "hbed": c.fillStyle = "#eeeeee"; c.fillRect(x, y, w, h); c.fillStyle = "#6aa0d0"; c.fillRect(x + 30, y, w - 30, h); c.fillStyle = "#ffffff"; c.fillRect(x + 4, y + 8, 22, h - 16); break;
+    case "sofa": c.fillStyle = col; rr(c, x, y, w, h, 10); c.fill(); c.fillStyle = "rgba(255,255,255,.2)"; c.fillRect(x + 6, y + 6, w - 12, h / 3); break;
+    case "rack": for (let i = 0; i < 7; i++) { c.fillStyle = ["#CE1126", "#FCD116", "#006B3F", "#1e5fbf", "#7b2d8e"][i % 5]; c.fillRect(x + 6 + i * (w - 12) / 7, y + 6, (w - 12) / 7 - 3, h - 10); } c.fillStyle = "#444444"; c.fillRect(x, y, w, 4); break;
+    case "shelf": c.fillStyle = col; c.fillRect(x, y, w, h); for (let i = 0; i < 6; i++) { c.fillStyle = "#cfe8f0"; c.fillRect(x + 8 + i * 26, y + 8, 18, 12); c.fillRect(x + 8 + i * 26, y + 24, 18, 12); } break;
+    case "furnshow": c.fillStyle = col; c.fillRect(x, y, w, h); c.fillStyle = "#6aa0d0"; c.fillRect(x + 10, y + 12, 70, 40); c.fillStyle = "#222222"; c.fillRect(x + 100, y + 14, 40, 26); c.fillStyle = "#b34040"; c.fillRect(x + 90, y + 50, 80, 26); break;
+    case "car": c.fillStyle = col; rr(c, x, y + 14, w, h - 14, 12); c.fill(); c.fillStyle = "#cfe8f0"; c.fillRect(x + 30, y, w - 60, 22); c.fillStyle = "#111111"; c.beginPath(); c.arc(x + 28, y + h, 10, 0, 7); c.arc(x + w - 28, y + h, 10, 0, 7); c.fill(); break;
+    case "stall": c.fillStyle = "#8a5a2b"; c.fillRect(x, y + 24, w, h - 24); for (let i = 0; i < 6; i++) { c.fillStyle = i % 2 ? "#ffffff" : col; c.fillRect(x + i * w / 6, y, w / 6, 24); } c.fillStyle = "#e0a82e"; c.fillRect(x + 10, y + 30, w - 20, 10); break;
+    case "desk": c.fillStyle = col; c.fillRect(x, y, w, h); c.fillStyle = "#222222"; c.fillRect(x + w / 2 - 16, y - 14, 32, 22); c.fillStyle = "#6ee79b"; c.fillRect(x + w / 2 - 13, y - 11, 26, 16); break;
+    case "desks": for (let i = 0; i < 5; i++) for (let j = 0; j < 2; j++) { c.fillStyle = col; c.fillRect(x + i * (w / 5) + 4, y + j * (h / 2) + 4, w / 5 - 12, h / 2 - 18); } break;
+    case "crate": c.fillStyle = col; c.fillRect(x, y, w, h); c.strokeStyle = "#5a3a18"; c.lineWidth = 2; c.strokeRect(x + 3, y + 3, w - 6, h - 6); break;
+    case "door": c.fillStyle = col; c.fillRect(x, y, w, h); c.fillStyle = "#FCD116"; c.fillRect(x + w - 10, y + h / 2 - 2, 4, 4); break;
+    case "empty": c.strokeStyle = "rgba(0,0,0,.35)"; c.setLineDash([6, 6]); c.lineWidth = 2; c.strokeRect(x, y, w, h); c.setLineDash([]); c.fillStyle = "rgba(0,0,0,.4)"; c.font = "bold 22px system-ui,sans-serif"; c.textAlign = "center"; c.fillText("+", x + w / 2, y + h / 2 + 8); break;
+    case "bed": { const bc = col === "bed3" ? "#d4a017" : col === "bed2" ? "#3a6ea8" : col === "bed1" ? "#8a8f94" : "#8a6a3a"; c.fillStyle = "#5a3a1a"; c.fillRect(x, y, w, h); c.fillStyle = bc; c.fillRect(x + 4, y + 16, w - 8, h - 20); c.fillStyle = "#ffffff"; c.fillRect(x + 10, y + 22, 34, 20); c.fillRect(x + 10, y + 48, 34, 16); break; }
+    case "tv": c.fillStyle = "#333333"; c.fillRect(x, y + h - 12, w, 12); c.fillStyle = "#111111"; c.fillRect(x + 4, y, w - 8, h - 12); c.fillStyle = col === "tv2" ? "#3a7aa8" : "#223a55"; c.fillRect(x + 8, y + 4, w - 16, h - 20); break;
+    case "fridge": c.fillStyle = "#eeeeee"; c.fillRect(x, y, w, h); c.fillStyle = "#bbbbbb"; c.fillRect(x, y + h * 0.38, w, 3); c.fillStyle = "#777777"; c.fillRect(x + w - 10, y + 10, 3, 16); c.fillRect(x + w - 10, y + h * 0.38 + 10, 3, 18); break;
+    case "wardrobe": c.fillStyle = "#6b4a2a"; c.fillRect(x, y, w, h); c.fillStyle = "#4a3018"; c.fillRect(x + w / 2 - 1, y, 2, h); c.fillStyle = "#d4a017"; c.fillRect(x + w / 2 - 8, y + h / 2, 4, 8); c.fillRect(x + w / 2 + 4, y + h / 2, 4, 8); break;
+    case "console": c.fillStyle = "#111111"; c.fillRect(x, y, w, h); c.fillStyle = "#3df27a"; c.fillRect(x + 6, y + 8, 6, 3); break;
+    case "audio": c.fillStyle = "#222222"; c.fillRect(x, y, w, h); c.fillStyle = "#555555"; c.beginPath(); c.arc(x + 16, y + h / 2, 10, 0, 7); c.arc(x + w - 16, y + h / 2, 10, 0, 7); c.fill(); break;
+    case "gen": c.fillStyle = "#d0aa30"; c.fillRect(x, y, w, h); c.fillStyle = "#222222"; c.fillRect(x + 6, y + 6, w - 12, 10); break;
+    case "plant": c.fillStyle = "#8a4a2a"; c.fillRect(x + 8, y + h - 20, w - 16, 20); c.fillStyle = "#2b8a3a"; c.beginPath(); c.arc(x + w / 2, y + h - 28, 16, 0, 7); c.arc(x + w / 2 - 8, y + h - 38, 10, 0, 7); c.fill(); break;
+    case "art": c.fillStyle = "#3a2a18"; c.fillRect(x, y, w, h); for (let i = 0; i < 8; i++) { c.fillStyle = ["#CE1126", "#FCD116", "#006B3F", "#000000"][i % 4]; c.fillRect(x + 6 + i * (w - 12) / 8, y + 6, (w - 12) / 8, h - 12); } break;
+    case "cool": if (col === "ac") { c.fillStyle = "#f2f2f2"; c.fillRect(x, y, w, h); c.fillStyle = "#bbbbbb"; c.fillRect(x + 6, y + h - 12, w - 12, 4); } else { c.fillStyle = "#555555"; c.fillRect(x + w / 2 - 2, y + 10, 4, h - 10); c.fillStyle = "#99aacc"; c.beginPath(); c.arc(x + w / 2, y + 14, 14, 0, 7); c.fill(); } break;
+    case "rug": c.fillStyle = "#a0242c"; c.beginPath(); c.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, 7); c.fill(); c.strokeStyle = "#FCD116"; c.lineWidth = 3; c.beginPath(); c.ellipse(x + w / 2, y + h / 2, w / 2 - 8, h / 2 - 8, 0, 0, 7); c.stroke(); break;
+    default: c.fillStyle = col || "#888888"; c.fillRect(x, y, w, h);
+  }
+}
+function drawInterior(t) {
+  const sp = INSIDE.spec, night = S.slot === 2, P = INSIDE.p, lv = sp.level || 0;
+  const IZ = clamp(CSSW / 340, 1, 1.5), vw = CSSW / IZ, vh = CSSH / IZ;
+  const camX = vw >= IW ? -(vw - IW) / 2 : clamp(P.x - vw / 2, 0, IW - vw), camY = vh >= IH ? -(vh - IH) / 2 : clamp(P.y - vh / 2, 0, IH - vh);
+  ctx.setTransform(DPR * IZ, 0, 0, DPR * IZ, -camX * DPR * IZ, -camY * DPR * IZ);
+  const X0 = camX - 20, XW = vw + 40, yb = camY + vh + 20;
+  ctx.fillStyle = sp.wall; ctx.fillRect(X0, camY - 20, XW, 138 - camY);
+  ctx.fillStyle = "rgba(0,0,0,.14)"; ctx.fillRect(X0, 108, XW, 10);
+  ctx.fillStyle = sp.floor; ctx.fillRect(X0, 118, XW, Math.max(0, yb - 118));
+  const gx0 = Math.floor(X0 / 64) * 64;
+  if (sp.res && lv >= 2 && lv <= 2) { ctx.strokeStyle = "rgba(60,30,10,.18)"; ctx.lineWidth = 1; for (let y = 118; y < yb; y += 14) { ctx.beginPath(); ctx.moveTo(X0, y); ctx.lineTo(X0 + XW, y); ctx.stroke(); } }
+  else if (sp.res && lv >= 5) { ctx.strokeStyle = "rgba(255,255,255,.45)"; ctx.lineWidth = 2; for (let i = -10; i < 30; i++) { ctx.beginPath(); ctx.moveTo(i * 90, 118); ctx.lineTo(i * 90 + 200, yb); ctx.stroke(); } ctx.strokeStyle = "rgba(120,90,20,.25)"; ctx.lineWidth = 1; for (let i = -10; i < 30; i++) { ctx.beginPath(); ctx.moveTo(i * 90 + 40, 118); ctx.lineTo(i * 90 + 240, yb); ctx.stroke(); } }
+  else { const g = sp.res && lv >= 3 ? 56 : 64; ctx.strokeStyle = sp.res && lv >= 4 ? "rgba(255,255,255,.4)" : "rgba(0,0,0,.08)"; ctx.lineWidth = 1; for (let x = Math.floor(X0 / g) * g; x < X0 + XW; x += g) { ctx.beginPath(); ctx.moveTo(x, 118); ctx.lineTo(x, yb); ctx.stroke(); } for (let y = 118; y < yb; y += g * 0.75) { ctx.beginPath(); ctx.moveTo(X0, y); ctx.lineTo(X0 + XW, y); ctx.stroke(); } }
+  if (sp.res) {
+    if (lv >= 1) { ctx.fillStyle = "#ffffff"; ctx.fillRect(476, 24, 100, 72); ctx.fillStyle = night ? "#1b2a4a" : "#bfe3f5"; ctx.fillRect(480, 28, 92, 64); ctx.fillStyle = "#ffffff"; ctx.fillRect(525, 28, 3, 64); }
+    if (lv >= 2) { ctx.fillStyle = ["", "", "#b7352f", "#3a6ea8", "#6b3fa0", "#d4a017"][lv]; ctx.fillRect(468, 20, 24, 80); ctx.fillRect(564, 20, 24, 80); ctx.fillStyle = "rgba(255,255,255,.6)"; ctx.fillRect(X0, 100, XW, 8); }
+    if (lv >= 3) { ctx.strokeStyle = "#444"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(150, 0); ctx.lineTo(150, 40); ctx.stroke(); ctx.fillStyle = night ? "#ffe28a" : "#f2e6b0"; ctx.beginPath(); ctx.arc(150, 46, 12, 0, 7); ctx.fill(); }
+    if (lv >= 4) { ctx.fillStyle = "rgba(70,45,20,.38)"; ctx.fillRect(296, 26, 128, 86); ctx.fillStyle = night ? "#fff6c0" : "#e8e0c0"; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(312 + i * 24, 14, 4, 0, 7); ctx.fill(); } }
+    if (lv >= 5) { ctx.strokeStyle = "#d4a017"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(320, 0); ctx.lineTo(320, 20); ctx.stroke(); ctx.fillStyle = "#e8c13a"; for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.arc(320 + i * 11, 26 + Math.abs(i) * 3, 3.2, 0, 7); ctx.fill(); } ctx.fillStyle = "#d4a017"; ctx.fillRect(X0, 114, XW, 4); }
+  }
+  sp.st.filter(s => s.layer).forEach(s => drawStation(ctx, s, t, night));
+  const list = sp.st.filter(s => !s.layer).map(s => ({ y: s.y + s.h, f: () => drawStation(ctx, s, t, night) }));
+  const bed = sp.st.find(s => s.shape === "bed");
+  if (INSIDE.rest > t && bed) list.push({ y: bed.y + bed.h + 1, f: () => {
+    ctx.save(); ctx.translate(bed.x + 96, bed.y + 46); ctx.rotate(-Math.PI / 2); drawPerson(ctx, 0, 0, S.look, "down", 0, false, 1.1); ctx.restore();
+    ctx.fillStyle = "rgba(58,110,168,.92)"; ctx.fillRect(bed.x + 64, bed.y + 24, bed.w - 72, 40);
+    ctx.fillStyle = "#ffffff"; ctx.font = "bold 14px system-ui,sans-serif"; ctx.textAlign = "center"; const z = Math.floor(t / 500) % 3; ctx.fillText("Z".repeat(z + 1), bed.x + 30 + z * 9, bed.y - 8 - z * 7); } });
+  else list.push({ y: P.y, f: () => drawPerson(ctx, P.x, P.y, S.look, P.dir, P.step, P.moving, 1.2) });
+  list.sort((a, b) => a.y - b.y).forEach(o => o.f());
+  if (night) { ctx.fillStyle = "rgba(15,20,75,.2)"; ctx.fillRect(X0, camY - 20, XW, vh + 40); }
+  sp.st.forEach(s => { if (s.act && s.label && s.shape !== "door") pill(ctx, s.label, s.x + s.w / 2, s.y - 8 - (s.shape === "altar" ? 22 : 0), s === INSIDE.near ? "#4caf75" : "rgba(22,32,42,.78)", "#ffffff"); });
+  const title = INSIDE.b.kind === "home" && S.region === S.home.region ? "Home, level " + S.home.level + ": " + HOME_LEVELS[S.home.level].n : displayName(INSIDE.b);
+  pill(ctx, title, camX + vw / 2, Math.max(camY + 190, 30), "rgba(22,32,42,.78)");
+}
+function hitIn(px, py) { const x = px - 7, y = py - 8; return INSIDE.spec.solid.some(s => x < s.x + s.w && x + 14 > s.x && y < s.y + s.h && y + 8 > s.y); }
+function startRest() {
+  if (!INSIDE) return; const bed = INSIDE.spec.st.find(s => s.shape === "bed"); INSIDE.rest = performance.now() + 3200;
+  if (bed) { INSIDE.p.x = bed.x + bed.w / 2; INSIDE.p.y = Math.min(394, bed.y + bed.h + 18); INSIDE.p.dir = "up"; }
+}
+function unstick() {
+  if (!INSIDE) return; const P = INSIDE.p; if (!hitIn(P.x, P.y)) return;
+  for (let r = 6; r <= 220; r += 6) for (let a = 0; a < 16; a++) { const nx = clamp(P.x + Math.cos(a / 16 * 6.2832) * r, 20, IW - 20), ny = clamp(P.y + Math.sin(a / 16 * 6.2832) * r, 146, 394); if (!hitIn(nx, ny)) { P.x = nx; P.y = ny; return; } }
+  P.x = 320; P.y = 380;
+}
+function updateInside(dt) {
+  const P = INSIDE.p; if (S.busy || INSIDE.rest > performance.now()) { P.moving = false; return; }
+  if (hitIn(P.x, P.y)) unstick();
+  const l = keys.ArrowLeft || keys.a || joy.left, r = keys.ArrowRight || keys.d || joy.right, u = keys.ArrowUp || keys.w || joy.up, d = keys.ArrowDown || keys.s || joy.down;
+  let vx = (r ? 1 : 0) - (l ? 1 : 0), vy = (d ? 1 : 0) - (u ? 1 : 0); P.moving = !!(vx || vy);
+  if (P.moving) {
+    const n = Math.hypot(vx, vy); vx = vx / n * 2.4 * dt; vy = vy / n * 2.4 * dt; P.step += dt;
+    if (Math.abs(vx) > Math.abs(vy)) P.dir = vx < 0 ? "left" : "right"; else P.dir = vy < 0 ? "up" : "down";
+    const nx = clamp(P.x + vx, 20, IW - 20), ny = clamp(P.y + vy, 146, 394);
+    if (!hitIn(nx, P.y)) P.x = nx; if (!hitIn(P.x, ny)) P.y = ny;
+  }
+}
+function nearestStation() {
+  const P = INSIDE.p; let best = null, bd = 26;
+  INSIDE.spec.st.forEach(s => { if (!s.act) return; const dx = Math.max(s.x - P.x, 0, P.x - (s.x + s.w)), dy = Math.max(s.y - P.y, 0, P.y - (s.y + s.h)), d = Math.hypot(dx, dy); if (d <= bd) { bd = d; best = s; } });
+  return best;
+}
+
+/* ---------------- Online: accounts, presence, messages ---------------- */
+let AUTH = null, CLOUD = null, REMOTE = [], UNREAD = 0, nearP = null, lastCloud = 0, cloudTimer = null;
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} };
+const online = () => !!CONFIG.BACKEND_URL;
+function authHeaders() { const h = { "Content-Type": "application/json" }; if (AUTH) h.Authorization = "Bearer " + AUTH.token; return h; }
+async function api(path, o) {
+  o = o || {};
+  const r = await fetch(CONFIG.BACKEND_URL + path, { method: o.method || "GET", headers: authHeaders(), body: o.body ? JSON.stringify(o.body) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.error || "Request failed"), { status: r.status });
+  return j;
+}
+async function loadMe() { try { const me = await api("/me"); AUTH.name = me.name; CLOUD = me.state || null; } catch (e) { if (e.status === 401) logout(); } }
+function logout() { AUTH = null; CLOUD = null; lsSet("gl_token", null); lsSet("gl_user", null); clearInterval(window._pt); clearInterval(window._it); REMOTE = []; authUI(); }
+function cloudSaveSoon() {
+  if (!AUTH || !online()) return; const now = Date.now();
+  if (now - lastCloud < 15000) { if (!cloudTimer) cloudTimer = setTimeout(() => { cloudTimer = null; cloudSave(); }, 15000 - (now - lastCloud)); return; }
+  cloudSave();
+}
+function cloudSave() {
+  if (!AUTH || !S) return; lastCloud = Date.now();
+  api("/save", { method: "POST", body: { state: S, summary: { name: S.name, look: S.look, region: S.region, role: S.role, cash: S.cash, net: netWorth(), day: S.day } } }).catch(() => {});
+}
+function startOnline() {
+  if (!AUTH || !online()) return;
+  clearInterval(window._pt); clearInterval(window._it);
+  window._pt = setInterval(pingTick, 3000); window._it = setInterval(inboxTick, 20000); pingTick(); inboxTick();
+}
+async function pingTick() {
+  if (!AUTH || !S || $("game").hidden) return;
+  try {
+    const pp = INSIDE ? INSIDE.p : player;
+    const r = await api("/ping", { method: "POST", body: { x: Math.round(player.x), y: Math.round(player.y), dir: pp.dir, region: S.region, inside: !!INSIDE, name: S.name, look: S.look, role: S.role } });
+    const seen = {}; (r.nearby || []).forEach(n => { seen[n.username] = 1; const old = REMOTE.find(x => x.username === n.username); if (old) { old.x = n.x; old.y = n.y; old.dir = n.dir; old.name = n.name; old.look = n.look; } else REMOTE.push(Object.assign({ rx: n.x, ry: n.y, step: 0, moving: false }, n)); });
+    REMOTE = REMOTE.filter(x => seen[x.username]);
+  } catch (e) { if (e.status === 401) logout(); }
+}
+function updatePhoneBtn() { $("phoneBtn").textContent = "📱"; if (UNREAD) { $("phoneBtn").append(mk("span", "badge", String(UNREAD))); } }
+async function inboxTick() { if (!AUTH) return; try { const r = await api("/inbox"); UNREAD = r.unread || 0; updatePhoneBtn(); } catch (e) {} }
+function nearestRemote() {
+  let best = null, bd = 36; REMOTE.forEach(r => { const d = Math.hypot(r.rx - player.x, r.ry - player.y); if (d < bd) { bd = d; best = r; } }); return best;
+}
+function playerSheet(r) {
+  ask(r.name || r.username, (r.role === "mp" ? "Member of Parliament" : r.role === "president" ? "President" : "Citizen") + ". Online now. Username: " + r.username + ".", [
+    { label: "Send a message", after: () => openPhone("thread", r.username) }, { label: "Leave" }]);
+}
+function phoneSheet() {
+  if (!S || S.busy) return;
+  if (!online() || !AUTH) return ask("Phone", online() ? "Log in or sign up from the title screen to message other players." : "Online features are off until the server is connected.", [{ label: "OK" }]);
+  openPhone("inbox");
+}
+function personRow(p, label, fn) {
+  const d = mk("div", "person"), l = mk("div"), n = mk("b", "", p.name || p.username);
+  const dot = mk("span", "dot" + (p.online ? "g" : "g dotx")); n.prepend(dot);
+  l.append(n, document.createTextNode((p.username ? "@" + p.username : "") + (p.last ? " · " + p.last.slice(0, 40) : "") + (p.region != null && REGIONS[p.region] ? " · " + REGIONS[p.region].cap : "")));
+  d.append(l); if (p.unread) d.append(mk("span", "badge", String(p.unread)));
+  const b = mk("button", "", label); b.onclick = fn; d.append(b); return d;
+}
+function openPhone(view, who) {
+  showSheet((el, close) => {
+    let timer = null; const done = () => { clearInterval(timer); close(); };
+    const go = (v, w) => { done(); openPhone(v, w); };
+    el.append(mk("h2", "", view === "thread" ? "Chat" : "Phone"));
+    if (view !== "thread") {
+      const tabs = mk("div", "seg tabs");
+      [["inbox", "Messages"], ["find", "Find people"], ["online", "Online now"]].forEach(([id, l]) => { const b = mk("button", view === id ? "on" : "", l); b.onclick = () => go(id); tabs.append(b); });
+      el.append(tabs);
+    }
+    const body = mk("div"); el.append(body);
+    const fail = e => { body.textContent = ""; body.append(mk("p", "", e.message || "Could not reach the server.")); };
+    if (view === "inbox") {
+      body.append(mk("p", "small", "Loading..."));
+      api("/inbox").then(r => { UNREAD = r.unread || 0; updatePhoneBtn(); body.textContent = "";
+        if (!r.chats.length) body.append(mk("p", "", "No messages yet. Use Find people or Online now to start a chat."));
+        r.chats.forEach(c => body.append(personRow({ username: c.with, name: c.name, last: c.last, unread: c.unread }, "Open", () => go("thread", c.with)))); }).catch(fail);
+    } else if (view === "find") {
+      const row = mk("div", "chatrow"), inp = mk("input", "txt"); inp.placeholder = "Search username or name"; inp.maxLength = 20;
+      const sb = mk("button", "", "Search"), res = mk("div"); row.append(inp, sb); body.append(row, res);
+      const run = () => { res.textContent = ""; api("/players?q=" + encodeURIComponent(inp.value.trim())).then(r => { if (!r.players.length) res.append(mk("p", "", "Nobody found.")); r.players.forEach(p => res.append(personRow(p, "Message", () => go("thread", p.username)))); }).catch(fail); };
+      sb.onclick = run; inp.onkeydown = e => { if (e.key === "Enter") run(); };
+    } else if (view === "online") {
+      body.append(mk("p", "small", "Loading..."));
+      api("/players?online=1").then(r => { body.textContent = ""; if (!r.players.length) body.append(mk("p", "", "Nobody else is online right now."));
+        r.players.forEach(p => body.append(personRow(p, "Message", () => go("thread", p.username)))); }).catch(fail);
+    } else {
+      const msgs = mk("div", "msgs"), row = mk("div", "chatrow"), inp = mk("input", "txt"), sb = mk("button", "", "Send"), info = mk("p", "small", "");
+      inp.placeholder = "Type a message"; inp.maxLength = 300; row.append(inp, sb); body.append(info, msgs, row);
+      const acts = mk("div", "row2"), bl = mk("button", "choice", "Block"), rp = mk("button", "choice", "Report"); acts.append(bl, rp); acts.style.marginTop = "10px"; body.append(acts);
+      let first = true;
+      const load = () => api("/thread?with=" + encodeURIComponent(who)).then(r => {
+        info.textContent = (r.name || who) + (r.online ? " is online" : " is offline") + ". Be kind. Never share your password.";
+        const bottom = first || msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 60; msgs.textContent = "";
+        r.messages.forEach(m => msgs.append(mk("div", "msg" + (m.from === AUTH.username ? " me" : ""), m.text)));
+        if (bottom) msgs.scrollTop = msgs.scrollHeight; first = false; inboxTick(); }).catch(fail);
+      const send = () => { const t = inp.value.trim(); if (!t) return; inp.value = ""; api("/dm", { method: "POST", body: { to: who, text: t } }).then(load).catch(e => { info.textContent = e.message; }); };
+      sb.onclick = send; inp.onkeydown = e => { if (e.key === "Enter") send(); };
+      bl.onclick = () => api("/block", { method: "POST", body: { user: who } }).then(() => { info.textContent = "Blocked. You will not see each other again."; }).catch(fail);
+      rp.onclick = () => api("/report", { method: "POST", body: { user: who, reason: "Reported from chat" } }).then(() => { info.textContent = "Thanks. We will review this chat."; }).catch(fail);
+      load(); timer = setInterval(load, 4000); inp.focus();
+    }
+    const back = mk("button", "choice gold", view === "thread" ? "Back" : "Close"); back.style.marginTop = "12px"; back.onclick = () => (view === "thread" ? go("inbox") : done()); el.append(back);
+  });
+}
+
+/* ---------------- Airport, flights and the FBI ---------------- */
+let FLIGHT = null;
+function addInc(kind, n) { S.inc = S.inc || {}; S.inc[kind] = (S.inc[kind] || 0) + n; }
+function airSheet() {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Airport"), mk("p", "", "Fly anywhere in Ghana. Economy is cheapest, first class restores your energy, and the private jet takes no time at all."));
+    const wrap = mk("div", "mapwrap"), svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 300 340");
+    const pts = [[-3.1,5.0],[-2.0,4.75],[-1.0,5.0],[0.0,5.6],[0.6,5.8],[1.2,6.1],[0.65,7.5],[0.5,8.5],[0.35,9.4],[0.0,11.0],[-0.3,11.15],[-2.9,11.0],[-2.7,9.5],[-2.8,8.5],[-2.7,7.5],[-3.1,6.0],[-3.25,5.1]];
+    const poly = document.createElementNS(NS, "polygon"); poly.setAttribute("points", pts.map(p => MX(p[0]) + "," + MY(p[1])).join(" ")); poly.setAttribute("fill", "#8fc79e"); poly.setAttribute("stroke", "#0A3D2A"); poly.setAttribute("stroke-width", "2"); svg.append(poly);
+    const info = mk("div", "info", "Tap a region on the map."), box = mk("div", "choices"), dots = [];
+    function show(i) {
+      dots.forEach((d, j) => d.setAttribute("stroke-width", j === i ? 4 : (j === S.region ? 3 : 1))); box.textContent = ""; const R = REGIONS[i];
+      if (i === S.region) { info.textContent = "You are already in " + R.cap + "."; return; }
+      const d = km(S.region, i), base = Math.round((60 + d * 0.45) * (lawOn("fuel") ? 0.7 : 1)), en = Math.min(15, Math.round(d / 25));
+      info.textContent = R.n + " Region (" + R.cap + "), about " + Math.round(d) + " km away.";
+      [{ id: "eco", n: "Economy", fare: base, slots: 1, perk: "energy −" + en }, { id: "first", n: "First class", fare: base * 3, slots: 1, perk: "energy +30, reputation +2" }, { id: "jet", n: "Private jet", fare: base * 10, slots: 0, perk: "no time lost, energy +50, reputation +5" }].forEach(cl => {
+        const b = mk("button", "choice", cl.n + " · " + fmt(cl.fare) + " · " + cl.perk);
+        if (S.cash < cl.fare) { b.disabled = true; b.textContent += " (not enough cash)"; } else if (cl.id === "eco" && S.energy < en) { b.disabled = true; b.textContent += " (too tired)"; }
+        b.onclick = () => { S.cash -= cl.fare; S.hunger += 5; if (cl.id === "eco") S.energy -= en; else if (cl.id === "first") { S.energy += 30; S.rep += 2; } else { S.energy += 50; S.rep += 5; } clampAll(); close(); startFlight({ from: S.region, to: i, cls: cl.id, slots: cl.slots }); };
+        box.append(b);
+      });
+    }
+    REGIONS.forEach((R, i) => {
+      const c = document.createElementNS(NS, "circle"); c.setAttribute("cx", MX(R.lon)); c.setAttribute("cy", MY(R.lat)); c.setAttribute("r", 11); c.setAttribute("fill", i === S.region ? "#CE1126" : "#FCD116"); c.setAttribute("stroke", "#000"); c.setAttribute("stroke-width", i === S.region ? 3 : 1); c.setAttribute("class", "dot");
+      c.addEventListener("click", () => show(i)); svg.append(c); dots.push(c);
+      const t = document.createElementNS(NS, "text"); t.setAttribute("x", MX(R.lon)); t.setAttribute("y", MY(R.lat) + 3); t.setAttribute("text-anchor", "middle"); t.setAttribute("font-size", "9"); t.setAttribute("font-weight", "800"); t.setAttribute("pointer-events", "none"); t.textContent = String(i + 1); svg.append(t);
+    });
+    wrap.append(svg); el.append(wrap, info, box); const cl = mk("button", "choice", "Stay here"); cl.onclick = close; el.append(cl);
+  });
+}
+function startFlight(o) { INSIDE = null; FLIGHT = { ...o, t0: performance.now(), dur: o.cls === "jet" ? 4200 : o.cls === "first" ? 5200 : 5800 }; S.busy = true; $("game").style.visibility = "hidden"; mini.hidden = true; }
+function finishFlight() {
+  const F = FLIGHT; FLIGHT = null; S.busy = false; $("game").style.visibility = ""; const R = REGIONS[F.to];
+  S.region = F.to; resetPlayer(); say("You landed in " + R.cap + " (" + { eco: "economy", first: "first class", jet: "private jet" }[F.cls] + ")."); render(); afterTimed(F.slots);
+}
+function drawPlane(c, cls, night) {
+  const jet = cls === "jet", first = cls === "first", L = jet ? 112 : 150, Hh = jet ? 22 : 28;
+  c.fillStyle = "#b9c3cd"; c.beginPath(); c.moveTo(-10, -Hh + 4); c.lineTo(40, -Hh + 4); c.lineTo(-34, -Hh - 36); c.lineTo(-58, -Hh - 36); c.closePath(); c.fill();
+  c.fillStyle = "#ffffff"; c.beginPath(); c.moveTo(-L + 6, -Hh + 4); c.lineTo(-L - 14, -Hh - 42); c.lineTo(-L + 30, -Hh - 42); c.lineTo(-L + 52, -Hh + 4); c.closePath(); c.fill();
+  c.fillStyle = "#CE1126"; c.fillRect(-L - 6, -Hh - 38, 26, 8); c.fillStyle = "#FCD116"; c.fillRect(-L - 2, -Hh - 30, 26, 8); c.fillStyle = "#006B3F"; c.fillRect(-L + 2, -Hh - 22, 26, 8);
+  c.fillStyle = jet ? "#f6f8fa" : "#ffffff"; rr(c, -L, -Hh, L * 2, Hh * 2, Hh); c.fill();
+  c.fillStyle = "#e6ebf0"; c.beginPath(); c.moveTo(L - 22, -Hh); c.quadraticCurveTo(L + 36, -Hh + 2, L + 40, Hh - 10); c.lineTo(L - 22, Hh); c.closePath(); c.fill();
+  c.fillStyle = "#CE1126"; c.fillRect(-L + 18, Hh - 13, L * 2 - 36, 3); c.fillStyle = jet ? "#d4a017" : "#FCD116"; c.fillRect(-L + 18, Hh - 10, L * 2 - 36, 3); c.fillStyle = "#006B3F"; c.fillRect(-L + 18, Hh - 7, L * 2 - 36, 3);
+  const cw = jet ? 84 : 104, cx0 = -cw / 2 + 8, top = -Hh + 5, bot = Hh - 17;
+  c.fillStyle = night ? "#2a2f3d" : "#e3e9f0"; rr(c, cx0, top, cw, bot - top, 6); c.fill();
+  c.fillStyle = "#9fc3dc"; for (let i = 0; i < 4; i++) { const wx = -L + 30 + i * 22; if (wx > cx0 - 12) break; c.beginPath(); c.arc(wx, -6, 4, 0, 7); c.fill(); }
+  for (let i = 0; i < 4; i++) { const wx = cx0 + cw + 16 + i * 22; if (wx > L - 34) break; c.beginPath(); c.arc(wx, -6, 4, 0, 7); c.fill(); }
+  const seatCol = jet ? "#e9dcc2" : first ? "#8a5a2b" : "#5b6f8a";
+  if (!jet && !first) { c.fillStyle = "#4a5c75"; rr(c, cx0 + 6, top + 6, 22, bot - top - 6, 4); c.fill(); }
+  c.fillStyle = seatCol; rr(c, cx0 + cw / 2 - 8, top + 3, 26, bot - top - 2, 6); c.fill();
+  c.save(); c.beginPath(); c.rect(cx0, top, cw, bot - top); c.clip(); drawPerson(c, cx0 + cw / 2 + 8, bot + 16, S.look, "right", 0, false, 0.85); c.restore();
+  c.fillStyle = seatCol; rr(c, cx0 + cw / 2 - 14, bot - 8, 36, 7, 3); c.fill();
+  if (first) { c.fillStyle = "#e8d9bb"; c.fillRect(cx0 + cw / 2 + 16, bot - 6, 24, 3); c.fillStyle = "#cfe8f6"; c.fillRect(cx0 + cw / 2 + 28, bot - 12, 4, 6); }
+  if (jet) { c.fillStyle = "#d4a017"; c.fillRect(cx0 + 4, top + 2, cw - 8, 2); c.fillStyle = "#f2d37a"; c.beginPath(); c.arc(cx0 + cw - 12, top + 8, 3, 0, 7); c.fill(); }
+  c.fillStyle = "#d3dae1"; c.beginPath(); c.moveTo(-26, Hh - 6); c.lineTo(46, Hh - 6); c.lineTo(-48, Hh + 46); c.lineTo(-76, Hh + 46); c.closePath(); c.fill();
+  c.fillStyle = "#aab3bc"; c.beginPath(); c.ellipse(-30, Hh + 14, 17, 9, 0, 0, 7); c.fill(); c.fillStyle = "#CE1126"; c.fillRect(-52, Hh + 38, 20, 4);
+}
+function drawFlight(t) {
+  const F = FLIGHT, el = t - F.t0, p = clamp(el / F.dur, 0, 1), night = S.slot === 2, w = CSSW, h = CSSH, c = ctx;
+  c.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const g = c.createLinearGradient(0, 0, 0, h);
+  if (night) { g.addColorStop(0, "#0b1030"); g.addColorStop(1, "#38468a"); } else { g.addColorStop(0, "#4f9fe6"); g.addColorStop(1, "#d6ecfb"); }
+  c.fillStyle = g; c.fillRect(0, 0, w, h);
+  if (night) { c.fillStyle = "#ffffff"; for (let i = 0; i < 40; i++) c.fillRect((i * 97) % w, (i * 53) % (h * 0.6), 2, 2); }
+  c.fillStyle = night ? "#1c3b2c" : "#7fb36a"; c.fillRect(0, h * 0.88, w, h * 0.12); c.fillStyle = night ? "#17301f" : "#6aa157";
+  for (let i = 0; i < 12; i++) { const x = (((i * 140 - el * 0.25) % (w + 140)) + w + 140) % (w + 140) - 70; c.fillRect(x, h * 0.88, 70, h * 0.12); }
+  c.fillStyle = night ? "rgba(255,255,255,.18)" : "rgba(255,255,255,.92)";
+  for (let i = 0; i < 9; i++) { const sp = 0.18 + (i % 3) * 0.1, x = (((i * 170 - el * sp) % (w + 240)) + w + 240) % (w + 240) - 120, y = 70 + (i * 79) % (h * 0.7), r = 22 + (i % 4) * 9; c.beginPath(); c.arc(x, y, r, 0, 7); c.arc(x + r, y + 4, r * 0.8, 0, 7); c.arc(x - r, y + 6, r * 0.7, 0, 7); c.fill(); }
+  const sc = Math.min(w / 360, 1.5);
+  c.save(); c.translate(w / 2, h * 0.42 + Math.sin(el / 380) * 7); c.scale(sc, sc); c.rotate(Math.sin(el / 700) * 0.03); drawPlane(c, F.cls, night); c.restore();
+  c.textAlign = "center"; c.fillStyle = "rgba(22,32,42,.82)"; rr(c, w / 2 - 140, h * 0.12, 280, 52, 26); c.fill(); c.fillStyle = "#ffffff"; c.font = "800 17px system-ui,sans-serif"; c.fillText(REGIONS[F.from].cap + " to " + REGIONS[F.to].cap, w / 2, h * 0.12 + 23);
+  c.font = "600 12px system-ui,sans-serif"; c.fillText({ eco: "Economy", first: "First class", jet: "Private jet" }[F.cls] + " · tap to skip", w / 2, h * 0.12 + 42);
+  c.fillStyle = "rgba(255,255,255,.45)"; rr(c, w * 0.15, h * 0.8, w * 0.7, 9, 4); c.fill(); c.fillStyle = "#4caf75"; rr(c, w * 0.15, h * 0.8, Math.max(9, w * 0.7 * p), 9, 4); c.fill();
+}
+cv.addEventListener("click", () => { if (FLIGHT) FLIGHT.t0 = performance.now() - FLIGHT.dur; });
+
+const FBI_TIERS = [50000, 200000, 800000, 3000000];
+function checkFbi() {
+  if (S.fbi) { if (S.day > S.fbi.dueDay) { const fine = Math.round(S.cash * 0.1); S.cash -= fine; S.rep -= 10; S.fbi = null; say("You ignored the FBI invitation. They fined you " + fmt(fine) + " and your reputation dropped."); } return; }
+  const t = S.fbiTier || 0;
+  if (t < FBI_TIERS.length && netWorth() >= FBI_TIERS[t]) {
+    S.fbi = { tier: t, dueDay: S.day + 3 }; S.fbiTier = t + 1;
+    ask("🕵️ FBI invitation", "Agents have noticed " + fmt(netWorth()) + " in your name. They invite you to their office to explain how you got it. Visit any FBI office within 3 days.", [{ label: "I will go and explain" }, { label: "Ignore it for now" }]);
+  }
+}
+function fbiDesk() { ask("FBI front desk", S.fbi ? "Agent: We have been expecting you. Go to the interview room. You must come by day " + S.fbi.dueDay + "." : "Agent: Nothing on your file. Keep your records clean.", [{ label: "OK" }]); }
+function fbiResult(title, text, rows, total) {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", title), mk("p", "", text), mk("p", "small", "What the records showed:"));
+    rows.forEach(([l, v]) => { const pct = Math.round(v / total * 100), d = mk("div", "res"), bar = mk("div", "b"), i = document.createElement("i"); i.style.width = pct + "%"; bar.append(i); d.append(mk("span", "nm", l), bar, mk("span", "pc", pct + "%")); el.append(d); });
+    const b = mk("button", "choice gold", "Continue"); b.onclick = () => { close(); afterTimed(1); }; el.append(b);
+  });
+}
+function fbiInterview() {
+  if (!S.fbi) return fbiDesk();
+  const inc = S.inc || {}, w = netWorth(), start = S.startCash || 200;
+  const labour = inc.labour || 0, trade = inc.trade || 0, rent = inc.rent || 0, salary = inc.salary || 0, purchase = inc.purchase || 0, known = labour + trade + rent + salary + purchase;
+  const other = Math.max(0, w - start - known), total = Math.max(1, known + other), sh = x => x / total;
+  const rows = [["Jobs", labour], ["Trading", trade], ["Property rent", rent], ["Public salary", salary], ["Wallet top-ups", purchase], ["Other", other]];
+  const claims = [
+    { t: "I earned it through jobs and trading", ok: sh(labour + trade) >= 0.35 }, { t: "It comes from my property rent", ok: sh(rent) >= 0.25 },
+    { t: "It is my salary as a public official", ok: sh(salary) >= 0.25 }, { t: "Investments, land growth and gifts", ok: sh(other) >= 0.3 }, { t: "I topped up my wallet with savings", ok: sh(purchase) >= 0.25 }];
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "FBI interview"), mk("p", "", "Agent: " + S.name + ", you hold " + fmt(w) + ". Explain how you got this money. We will compare your answer with the records."));
+    const ta = mk("textarea", "txt"); ta.placeholder = "Your statement (optional): tell the agent your story"; ta.maxLength = 300; ta.rows = 3; el.append(ta);
+    const box = mk("div", "choices"); el.append(box);
+    const done = () => { S.statements = (S.statements || []).concat([{ day: S.day, text: ta.value.trim().slice(0, 300) }]).slice(-5); S.fbi = null; clampAll(); close(); render(); };
+    claims.forEach(cl => { const b = mk("button", "choice", cl.t); b.onclick = () => {
+      if (cl.ok) { S.rep += 6; say("The FBI cleared you. Case closed."); done(); fbiResult("Case closed", "Agent: Your story matches the records. You are free to go. Thank you for coming in.", rows, total); }
+      else { const fine = Math.round(S.cash * 0.2); S.cash -= fine; S.rep -= 15; say("The FBI caught a lie. Fine: " + fmt(fine) + "."); done(); fbiResult("Your story does not match", "Agent: Our records show something different. You are fined " + fmt(fine) + " and your reputation takes a hit.", rows, total); } }; box.append(b); });
+    const sil = mk("button", "choice", "I would rather not say"); sil.onclick = () => { const fine = Math.round(S.cash * 0.08); S.cash -= fine; S.rep -= 5; say("You stayed silent. Fine: " + fmt(fine) + "."); done(); fbiResult("You stayed silent", "Agent: Silence does not help you. You are fined " + fmt(fine) + ", but we will let you go this time.", rows, total); }; box.append(sil);
+    const cost = Math.round(S.cash * 0.15), br = mk("button", "choice", "Offer the agent a bribe (" + fmt(cost) + ")"); if (cost < 1) br.disabled = true;
+    br.onclick = () => { if (Math.random() < 0.45) { S.cash -= cost; S.rep -= 3; say("The agent took the bribe. Case dropped."); done(); fbiResult("Case dropped", "Agent: I did not see anything. Do not come back.", rows, total); } else { const fine = Math.round(S.cash * 0.3); S.cash -= fine + cost; S.rep -= 25; say("Bribery attempt failed. Fine: " + fmt(fine + cost) + "."); done(); fbiResult("Bribery attempt", "Agent: Did you just try to bribe a federal agent? You are fined " + fmt(fine + cost) + ".", rows, total); } }; box.append(br);
+    const cl = mk("button", "choice", "Come back later"); cl.onclick = close; el.append(cl);
+  });
+}
+function fbiMenu() { fbiDesk(); }
+
+/* ---------------- Landing, sign up and character creator ---------------- */
+function demoState() {
+  return { demo: true, name: "", look: { skin: 3, outfit: 0, hair: 0 }, day: 1, slot: 1, region: 6, home: { region: 6, level: 0, furn: {} }, props: {}, cash: 0, energy: 100, hunger: 0, rep: 0, skill: 0, car: 0, phone: false, party: null, role: "citizen", race: null, pending: [], log: [], busy: true, law: LAWS[rnd(0, LAWS.length - 1)].id };
+}
+function refreshLanding() {
+  if (!$("landing")) return;
+  const on = online(), li = !!AUTH, hasSave = !on && !!loadSave();
+  $("lSignup").hidden = $("lLogin").hidden = li || !on;
+  if (li) { $("lMain").textContent = "Continue as " + AUTH.username; $("lSecond").textContent = "Log out"; $("lSecond").hidden = false; }
+  else if (on) { $("lMain").textContent = "Sign up free"; $("lSecond").textContent = "Log in"; $("lSecond").hidden = false; }
+  else { $("lMain").textContent = hasSave ? "Continue" : "Play free"; $("lSecond").textContent = "New game"; $("lSecond").hidden = !hasSave; }
+  $("lOffline").hidden = !(on && !li) && !(li && CLOUD);
+  $("lOffline").textContent = li && CLOUD ? "Start over with a new character" : "Play offline";
+  const law = LAWS.find(l => l.id === S.law) || LAWS[0]; $("lBanner").textContent = law.icon + " " + law.t;
+}
+function authUI() { refreshLanding(); }
+async function loadPublicStats() {
+  const base = [["🏛️ Government"], ["🌴 Plots"], ["🏠 Homes"]];
+  const chips = $("lChips"); const draw = extra => { chips.textContent = ""; extra.concat(base.map(b => b[0])).forEach(t => chips.append(mk("span", "chip2", t))); };
+  draw(["Free to play"]);
+  if (!online()) return;
+  try {
+    const r = await fetch(CONFIG.BACKEND_URL + "/public-stats?visit=1").then(x => x.json());
+    draw(["🟢 " + r.online + " online now", "👀 " + r.visits + " visits"]);
+    $("lPlaying").textContent = ""; const b = mk("b", "", r.online + " Ghanaian" + (r.online === 1 ? "" : "s")); $("lPlaying").append(b, document.createTextNode(" playing right now, free"));
+  } catch (e) {}
+}
+function buildAvatars() {
+  const box = $("lAv"); box.textContent = "";
+  [{ skin: 3, outfit: 0, hair: 0, gender: 0 }, { skin: 2, outfit: 2, hair: 1, gender: 1 }, { skin: 4, outfit: 1, hair: 2, gender: 1 }, { skin: 1, outfit: 3, hair: 0, gender: 0 }].forEach(l => {
+    const c = document.createElement("canvas"); c.width = 88; c.height = 88; box.append(c); const x = c.getContext("2d"); x.fillStyle = "#dfe9f2"; x.fillRect(0, 0, 88, 88); drawPerson(x, 44, 98, l, "down", 0, false, 2.4);
+  });
+}
+function authSheet(kind) {
+  showSheet((el, close) => {
+    el.append(mk("h2", "", kind === "signup" ? "Sign up free" : "Log in"), mk("p", "small", kind === "signup" ? "Pick a username and password. You can message other players and your game saves online." : "Welcome back."));
+    const u = mk("input", "txt"); u.placeholder = "Username (letters and numbers)"; u.maxLength = 16; u.autocomplete = "username"; u.autocapitalize = "none";
+    const p = mk("input", "txt"); p.type = "password"; p.placeholder = "Password (6 or more characters)"; p.autocomplete = kind === "signup" ? "new-password" : "current-password";
+    const msg = mk("p", "small", ""), go = mk("button", "choice gold", kind === "signup" ? "Create my account" : "Log in");
+    const sw = mk("button", "linkbtn", kind === "signup" ? "I already have an account" : "Create a new account"), cl = mk("button", "linkbtn", "Cancel");
+    const submit = () => { msg.textContent = "One moment..."; doAuth(kind, u.value.trim().toLowerCase(), p.value).then(() => { close(); continueOnline(); }).catch(e => { msg.textContent = e.message; }); };
+    go.onclick = submit; p.onkeydown = e => { if (e.key === "Enter") submit(); };
+    sw.onclick = () => { close(); authSheet(kind === "signup" ? "login" : "signup"); }; cl.onclick = close;
+    el.append(u, p, msg, go, sw, cl); u.focus();
+  });
+}
+async function doAuth(kind, u, p) {
+  const j = await api("/" + kind, { method: "POST", body: { username: u, password: p } });
+  AUTH = { token: j.token, username: j.username }; lsSet("gl_token", j.token); lsSet("gl_user", j.username); await loadMe(); refreshLanding();
+}
+function continueOnline() { if (CLOUD) beginState(CLOUD); else characterSheet(); }
+function beginState(state) {
+  S = JSON.parse(JSON.stringify(state)); S.busy = false; delete S.demo; S.props = S.props || {}; S.log = S.log || []; S.home.furn = S.home.furn || {}; S.law = S.law || LAWS[0].id; S.inc = S.inc || {}; S.startCash = S.startCash || 200; S.fbiTier = S.fbiTier || 0;
+  Object.values(S.props).forEach(p => { p.furn = p.furn || {}; }); startGame();
+}
+function characterSheet() {
+  let lk = { skin: 3, outfit: 0, hair: 0, gender: 0 }, start = "scratch";
+  showSheet((el, close) => {
+    el.append(mk("h2", "", "Create your character"));
+    const name = mk("input", "txt"); name.placeholder = "Your name"; name.maxLength = 14; name.value = AUTH ? AUTH.username.slice(0, 14) : "";
+    const pv = mk("canvas"); pv.width = 360; pv.height = 300; pv.style.cssText = "width:180px;height:150px;display:block;margin:6px auto;background:linear-gradient(#cfe5bd,#a6c98a);border-radius:16px";
+    const redraw = () => { const c = pv.getContext("2d"); c.clearRect(0, 0, 360, 300); c.fillStyle = "#b9d8a0"; c.fillRect(0, 0, 360, 300); drawPerson(c, 180, 255, lk, "down", 0, false, 6); };
+    const gs = mk("div", "seg"), sk = mk("div", "swatches"), ot = mk("div", "swatches"), hs = mk("div", "seg"), st = mk("div", "seg"), sr = mk("select", "txt");
+    const HNAMES = [["Short cut", "Twists", "Cap"], ["Long hair", "Puffs", "Headwrap"]];
+    const buildHair = () => { hs.textContent = ""; HNAMES[lk.gender].forEach((h, i) => { const b = mk("button", i === lk.hair ? "on" : "", h); b.onclick = () => { lk.hair = i; [...hs.children].forEach((x, j) => x.classList.toggle("on", j === i)); redraw(); }; hs.append(b); }); };
+    ["Male", "Female"].forEach((g, i) => { const b = mk("button", i === lk.gender ? "on" : "", g); b.onclick = () => { lk.gender = i; [...gs.children].forEach((x, j) => x.classList.toggle("on", j === i)); buildHair(); redraw(); }; gs.append(b); });
+    SKINS.forEach((c, i) => { const b = mk("button", "sw" + (i === lk.skin ? " on" : "")); b.style.background = c; b.setAttribute("aria-label", "Skin tone " + (i + 1)); b.onclick = () => { lk.skin = i; [...sk.children].forEach((x, j) => x.classList.toggle("on", j === i)); redraw(); }; sk.append(b); });
+    OUTFITS.forEach((c, i) => { const b = mk("button", "sw" + (i === lk.outfit ? " on" : "")); b.style.background = c; b.setAttribute("aria-label", "Outfit colour " + (i + 1)); b.onclick = () => { lk.outfit = i; [...ot.children].forEach((x, j) => x.classList.toggle("on", j === i)); redraw(); }; ot.append(b); });
+    buildHair();
+    const note = mk("p", "small", "You start with ₵200 and a lot to prove.");
+    [["scratch", "From scratch"], ["connected", "Well connected"]].forEach(([id, l]) => { const b = mk("button", id === start ? "on" : "", l); b.onclick = () => { start = id; [...st.children].forEach(x => x.classList.toggle("on", x === b)); note.textContent = id === "connected" ? "You start with ₵3,000 and a head start on reputation." : "You start with ₵200 and a lot to prove."; }; st.append(b); });
+    REGIONS.forEach((R, i) => { const o = mk("option", "", R.cap + " (" + R.n + ")"); o.value = i; sr.append(o); }); sr.value = 6;
+    const go = mk("button", "choice gold", "Start my life"), cl = mk("button", "linkbtn", "Cancel");
+    go.onclick = () => {
+      const reg = +sr.value;
+      S = { name: (name.value.trim() || (lk.gender ? "Ama" : "Kofi")).slice(0, 14), look: { ...lk }, day: 1, slot: 0, cash: start === "connected" ? 3000 : 200, energy: 90, hunger: 20, rep: start === "connected" ? 20 : 0, skill: 0, region: reg, home: { region: reg, level: 0, furn: {} }, props: {}, car: 0, phone: false,
+        party: null, role: "citizen", race: null, pending: [], busy: false, inc: {}, startCash: start === "connected" ? 3000 : 200, fbi: null, fbiTier: 0, law: LAWS[rnd(0, LAWS.length - 1)].id, log: ["Welcome to " + REGIONS[reg].cap + ". Your home has the green ring pin. Tap the Taxi button to get around fast."] };
+      close(); startGame();
+    };
+    cl.onclick = close;
+    el.append(name, pv, mk("span", "field-label", "Character"), gs, mk("span", "field-label", "Skin"), sk, mk("span", "field-label", "Outfit"), ot, mk("span", "field-label", "Hair"), hs, mk("span", "field-label", "Home city"), sr, mk("span", "field-label", "Your start"), st, note, go, cl);
+    redraw();
+  });
+}
+function startGame() {
+  $("landing").hidden = true; $("game").hidden = false; prevCash = S.cash; CITY = null; resetPlayer(); lastAct = "~"; render(); save(); startOnline();
+}
+async function refreshLive() {
+  const bars = [$("liveL"), $("liveG")];
+  if (!online()) { bars.forEach(b => { b.hidden = true; }); return; }
+  try { const r = await fetch(CONFIG.BACKEND_URL + "/public-stats").then(x => x.json()); const t = "🟢 " + r.online + " playing now · " + r.players + " players so far"; bars.forEach(b => { b.textContent = t; b.hidden = false; }); } catch (e) {}
+}
+function initLanding() {
+  S = demoState(); resetPlayer(); buildAvatars(); loadPublicStats();
+  $("lMain").onclick = () => { if (AUTH) return continueOnline(); if (online()) return authSheet("signup"); if (loadSave()) { beginState(loadSave()); } else characterSheet(); };
+  $("lSecond").onclick = () => { if (AUTH) return logout(); if (online()) return authSheet("login"); characterSheet(); };
+  $("lSignup").onclick = () => authSheet("signup"); $("lLogin").onclick = () => authSheet("login");
+  $("lOffline").onclick = () => { if (AUTH && CLOUD && !confirm("Start over? This replaces your saved game.")) return; characterSheet(); };
+  $("lAd").onclick = () => adForm();
+  if (online() && lsGet("gl_token")) { AUTH = { token: lsGet("gl_token"), username: lsGet("gl_user") || "" }; loadMe().then(refreshLanding); }
+  refreshLanding(); loadAds(); refreshLive(); if (online()) { setInterval(refreshLive, 30000); setInterval(loadAds, 60000); } requestAnimationFrame(loop);
+}
+initLanding();
+</script>
+</body>
+</html>
