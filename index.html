@@ -1573,11 +1573,20 @@ const online = () => !!CONFIG.BACKEND_URL;
 function authHeaders() { const h = { "Content-Type": "application/json" }; if (AUTH) h.Authorization = "Bearer " + AUTH.token; return h; }
 async function api(path, o) {
   o = o || {};
-  const r = await fetch(CONFIG.BACKEND_URL + path, { method: o.method || "GET", headers: authHeaders(), body: o.body ? JSON.stringify(o.body) : undefined });
+  const init = { method: o.method || "GET", headers: authHeaders(), body: o.body ? JSON.stringify(o.body) : undefined };
+  let r = null;
+  for (let i = 0; i < 3 && !r; i++) {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 30000);
+    try { r = await fetch(CONFIG.BACKEND_URL + path, { ...init, signal: ctl.signal }); }
+    catch (e) { if (i < 2) await new Promise(res => setTimeout(res, 4000)); }
+    finally { clearTimeout(to); }
+  }
+  if (!r) throw new Error("Can't reach the game server. It may be waking up, so wait 30 seconds and try again.");
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw Object.assign(new Error(j.error || "Request failed"), { status: r.status });
   return j;
 }
+
 async function loadMe() { try { const me = await api("/me"); AUTH.name = me.name; CLOUD = me.state || null; } catch (e) { if (e.status === 401) logout(); } }
 function logout() { AUTH = null; CLOUD = null; lsSet("gl_token", null); lsSet("gl_user", null); clearInterval(window._pt); clearInterval(window._it); REMOTE = []; authUI(); }
 function cloudSaveSoon() {
