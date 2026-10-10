@@ -1,0 +1,8 @@
+{
+  "name": "ghana-life-server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "ghana-life-server.js",
+  "scripts": { "start": "node ghana-life-server.js" },
+  "engines": { "node": ">=18" }
+}

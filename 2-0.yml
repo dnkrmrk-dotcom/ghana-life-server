@@ -1,0 +1,21 @@
+# Render blueprint for the Ghana Life server.
+# You type the two secret values (PAYSTACK_SECRET_KEY and ADMIN_KEY) yourself in the Render dashboard.
+# They are never stored in this file.
+services:
+  - type: web
+    name: ghana-life-server
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: ADMIN_KEY
+        sync: false
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: ghana-life-data
+      mountPath: /var/data
+      sizeGB: 1
