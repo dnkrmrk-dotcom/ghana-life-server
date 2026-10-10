@@ -1882,7 +1882,14 @@ async function refreshLive() {
 }
 function initLanding() {
   S = demoState(); resetPlayer(); buildAvatars(); loadPublicStats();
-  $("lMain").onclick = () => { if (AUTH) return continueOnline(); if (online()) return authSheet("signup"); if (loadSave()) { beginState(loadSave()); } else characterSheet(); };
+  $("lMain").onclick = () => {
+  if (AUTH) return continueOnline();
+  if (loadSave()) {
+    beginState(loadSave());
+  } else {
+    characterSheet();
+  }
+};
   $("lSecond").onclick = () => { if (AUTH) return logout(); if (online()) return authSheet("login"); characterSheet(); };
   $("lSignup").onclick = () => authSheet("signup"); $("lLogin").onclick = () => authSheet("login");
   $("lOffline").onclick = () => { if (AUTH && CLOUD && !confirm("Start over? This replaces your saved game.")) return; characterSheet(); };
